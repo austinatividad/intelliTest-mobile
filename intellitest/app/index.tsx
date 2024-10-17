@@ -38,6 +38,14 @@ export default function Index() {
           <Text className="text-2xl">Continue</Text>
         </Button>
       </View>
+
+      <View className="">
+        <Button onPress={() => {
+          router.push("./dashboard/exams");
+        }}>
+          <Text className="text-2xl">[TEST] My Exams Page</Text>
+        </Button>
+      </View>
     </View>
       
     </View>

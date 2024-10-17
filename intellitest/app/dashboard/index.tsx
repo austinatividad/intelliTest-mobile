@@ -101,6 +101,10 @@
           }
       }, [user.firstName]);
 
+
+    const handleGenerateTest = () => {
+      router.push("/dashboard/new");
+    }
     return (
       <ScrollView
         style={{
@@ -116,7 +120,7 @@
             <View className="">
 
               {/* TODO: Convert to a component  */}
-              <Button size="lg" className="justify-center text-left">
+              <Button size="lg" className="justify-center text-left" onPress={handleGenerateTest}>
                 <View className="flex flex-row">
                   <NotebookText scale={30}/>
 

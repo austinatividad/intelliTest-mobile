@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Image } from "lucide-react-native";
 import { useRouter } from "expo-router";
+import { useLocalSearchParams } from 'expo-router';
 import { Input } from "@/components/ui/input";
 import React from "react";
 
@@ -12,11 +13,22 @@ export default function Index() {
   const router = useRouter();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  // Update the email state if the
+
+  const { email: emailParam } = useLocalSearchParams();
+  
+
+  React.useEffect(() => {
+    if (emailParam) {
+      setEmail(emailParam);
+    }
+  }, [emailParam]);
+
 
   function handleAuth() {
     //TODO: Add actual authentication logic and pass email to the next page
     //TODO: Replace this with the page
-    router.dismissAll();
+    router.navigate("/dashboard")
   }
 
   const { setLoading, setText } = useLoadingContext();
@@ -46,7 +58,7 @@ export default function Index() {
         </View>
 
         <Button onPress={handleAuth}>
-          <Text className="text-2xl">Log In</Text>
+          <Text className="text-2xl">Sign In</Text>
         </Button>  
     </View>
   );

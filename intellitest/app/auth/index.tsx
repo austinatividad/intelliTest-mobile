@@ -16,11 +16,17 @@ export default function Index() {
     // setLoading(true);
     //TODO: Add actual authentication logic and pass email to the next page
     if (email == "email@gmail.com") {
-      router.push("./signin");
+      router.push({
+        pathname: "/auth/signin",
+        params: {email: email}
+      });
     } else {
-      router.push("./signup");
+      router.push({
+        pathname: "/auth/signup",
+        params: {email: email}
+      });
+      };
     }
-  }
 
   // function emailChangeHandler(text: string) {
   //   setEmail(text);

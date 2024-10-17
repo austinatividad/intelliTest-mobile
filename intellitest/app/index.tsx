@@ -3,7 +3,13 @@ import { Text } from "@/components/ui/text";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { Button } from "@/components/ui/button";
 import { Image } from "lucide-react-native";
+import { useRouter } from "expo-router";
+
+
+
 export default function Index() {
+  const router = useRouter();
+
   const { setLoading, setText } = useLoadingContext();
   return (
     <View
@@ -26,7 +32,9 @@ export default function Index() {
       
 
       <View className="">
-        <Button>
+        <Button onPress={() => {
+          router.push("./auth");
+        }}>
           <Text className="text-2xl">Continue</Text>
         </Button>
       </View>

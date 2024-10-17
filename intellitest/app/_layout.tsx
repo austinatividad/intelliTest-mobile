@@ -87,8 +87,8 @@ export default function RootLayout() {
                   headerTitleAlign: "center",
                   headerTitle(props) {
                     return (
-                      <Text className="text-lg font-semibold">
-                        {toOptions(props.children)}
+                      <Text className="text-3xl font-semibold">
+                        intelli<Text className="text-3xl font-semibold text-green-400">Test</Text>
                       </Text>
                     );
                   },

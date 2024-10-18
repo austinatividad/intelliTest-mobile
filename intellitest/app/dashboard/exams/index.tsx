@@ -1,4 +1,4 @@
-import { View, FlatList } from "react-native";
+import { View, FlatList, NativeSyntheticEvent } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { Button } from "@/components/ui/button";
@@ -21,10 +21,19 @@ export default function Index() {
   const renderItem = ({ item }: {item: ItemData}) => {
     return (
         <View style={{ alignItems: 'center'}}>
-            <ExamItem examName={item.examName} examStatus={item.examStatus} />
+            <ExamItem examName={item.examName} examStatus={item.examStatus} id={item.id} onPress={handlePress}/>
         </View>
     )
   }
+
+  function handlePress(id: string) {
+    console.log(id);
+    router.navigate({
+      pathname: "/dashboard/exam",
+      params: {examId: id}
+    })
+  }
+  
   return (
     <View
       style={{
@@ -49,7 +58,7 @@ export default function Index() {
         data={ dummy }
         renderItem={ renderItem }
         className="w-full"
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id}
         extraData={selectedId}
       />
     </View>

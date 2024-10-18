@@ -10,66 +10,21 @@ import { InputWithIcon } from "@/components/ui/input-with-icon";
 
 import {Search} from "lucide-react-native";
 
-const DUMMY_DATA = [
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-    {
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed",
-    },
-]
-
+import { dummy, ItemData } from "@/lib/dummy_data";
 export default function Index() {
   const router = useRouter();
 
   const { setLoading, setText } = useLoadingContext();
   const [searchText, setSearchText] = React.useState('');
+  const [selectedId, setSelectedId] = React.useState<string>();
+
+  const renderItem = ({ item }: {item: ItemData}) => {
+    return (
+        <View style={{ alignItems: 'center'}}>
+            <ExamItem examName={item.examName} examStatus={item.examStatus} />
+        </View>
+    )
+  }
   return (
     <View
       style={{
@@ -91,19 +46,12 @@ export default function Index() {
         </View>
       {/* Dummy Data */}
       <FlatList
-        data={DUMMY_DATA}
-        renderItem={({item}) =>         
-                <View style={{ alignItems: 'center'}}>
-                    <ExamItem examName={item.examName} examStatus={item.examStatus} />
-                </View>
-        }
+        data={ dummy }
+        renderItem={ renderItem }
         className="w-full"
-      >
-
-      </FlatList>
-
-
-
+        keyExtractor={item => item.id.toString()}
+        extraData={selectedId}
+      />
     </View>
   );
 }

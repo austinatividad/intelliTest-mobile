@@ -15,7 +15,7 @@ export default function Index() {
   const [password, setPassword] = React.useState('');
   // Update the email state if the
 
-  const { email: emailParam } = useLocalSearchParams();
+  const { email: emailParam } = useLocalSearchParams() as { email: string | undefined };
   
 
   React.useEffect(() => {

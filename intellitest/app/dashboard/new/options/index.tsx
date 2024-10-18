@@ -29,7 +29,7 @@ export default function Index() {
       <View>
         <Text className="text-3xl font-bold">Just a few more steps!</Text>
 
-        <Text className="flex w-full justify-left text-left pb-2 text-xl">
+        <Text className="flex w-full justify-left text-left pb-2 text-xl text-gray-500">
           We're just finalizing the information we need to create your new test 😊
         </Text>
       </View>
@@ -47,17 +47,20 @@ export default function Index() {
       </View>
 
       {/* Grade Level */}
-      <Label nativeID="gradeLevel" className="flex w-full justify-left text-left pb-2">
+      <Label nativeID="gradeLevel" className="flex w-full justify-left text-left">
         Grade Level
       </Label>
+      <Text className="pb-2 text-gray-500">adjusts difficulty based on your level</Text>
       <View className="pb-7">
         <Input className="w-full" nativeID="gradeLevel" />
+        
       </View>
 
       {/* Additional Notes */}
-      <Label nativeID="additionalNotes" className="flex w-full justify-left text-left pb-2">
-        Additional Notes
+      <Label nativeID="additionalNotes" className="flex w-full justify-left text-left">
+        Additional Instructions
       </Label>
+      <Text className="pb-2 text-gray-500">how you want your test to be structured and answered</Text>
       <View className="pb-7">
         <Textarea className="w-full" nativeID="additionalNotes" />
       </View>

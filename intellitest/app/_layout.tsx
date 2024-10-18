@@ -1,7 +1,7 @@
 import "@/globals.css";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Theme, ThemeProvider } from "@react-navigation/native";
-import { SplashScreen, Stack } from "expo-router";
+import { Href, SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Platform, View } from "react-native";
@@ -29,6 +29,19 @@ const DARK_THEME: Theme = {
   colors: NAV_THEME.dark,
 };
 
+// Define all valid paths as a union type
+type ValidPaths = "/dashboard" | "/dashboard/exams" | "/dashboard/profile";
+const pathMap: Record<string, string> = {
+  home: "/dashboard",
+  exams: "/dashboard/exams",
+  profile: "/dashboard/profile",
+};
+
+const reversePathMap: Record<string, string> = {
+  "/dashboard": "home",
+  "/dashboard/exams": "exams",
+  "/dashboard/profile": "profile",
+};
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -53,6 +66,22 @@ export default function RootLayout() {
     //example
     // DMSans: require("../assets/fonts/DMSans.ttf"),
   });
+  // Function to sync route with selected toggle value
+  React.useEffect(() => {
+    const currentPath = `/${segments.join("/")}`;  // Get the current path as a string
+    const matchedValue = reversePathMap[currentPath] || "home";  // Get the corresponding toggle value
+    setSelectedValue(matchedValue);  // Sync the selected value with the active route
+  }, [segments]);  // Re-run the effect whenever the route changes
+
+  const handleToggleChange = (value: string | undefined) => {
+    if (typeof value === "string") {
+      setSelectedValue(value);  // Update the selected value
+      const path = pathMap[value];  // Get the path corresponding to the value
+      if (path) {
+        router.navigate({ pathname: path as ValidPaths });  // Navigate to the path
+      }
+    }
+  };
 
   React.useEffect(() => {
     (async () => {
@@ -122,13 +151,7 @@ export default function RootLayout() {
                 <ToggleGroup
                   type="single"
                   value={selectedValue}
-                  onValueChange={(value) => {
-                    if (typeof value === "string") {
-                      setSelectedValue(value);
-                      router.navigate("/dashboard/" + value);
-                    }
-                    console.log(value);
-                  }}
+                  onValueChange={handleToggleChange}
                   className="w-full h-full"
                   style={{
                     flexDirection: 'row',
@@ -137,7 +160,7 @@ export default function RootLayout() {
                     backgroundColor: 'white', // Ensure background is transparent
                   }}
                 >
-                <ToggleGroupItem value=" " className="flex-1" style={{ flex: 1, alignItems: 'center', backgroundColor: 'transparent' }}>
+                <ToggleGroupItem value="home" className="flex-1" style={{ flex: 1, alignItems: 'center', backgroundColor: 'transparent' }}>
                   <House color={selectedValue === 'home' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000")} />
                   <Text style={{ color: selectedValue === 'home' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000") }}>Home</Text>
                 </ToggleGroupItem>

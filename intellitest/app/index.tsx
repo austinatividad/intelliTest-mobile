@@ -42,13 +42,13 @@ export default function Index() {
         </Button>
       </View>
 
-      <View className="">
+      {/* <View className="">
         <Button onPress={() => {
           router.push("./dashboard/exams");
         }}>
           <Text className="text-2xl">[TEST] My Exams Page</Text>
         </Button>
-      </View>
+      </View> */}
     </View>
       
     </View>

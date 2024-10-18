@@ -30,15 +30,51 @@ export default function Index() {
     <View
       style={{
         flex: 1,
-        justifyContent: "flex-start",
-        alignItems: "center",
       }}
     >
-      <Text>This is a test page</Text>
-      <Text>Exam ID: {examId} </Text>
-      <Text>Exam Name: {exam?.examName} </Text>
-      <Text>Exam Status: {exam?.examStatus} </Text>
-      <Text></Text>
+      <View className="p-4">
+        <Text className="text-3xl font-bold">{exam?.examName}</Text>
+        <Text className="text-xl font-semi-bold text-gray-500 mb-4">{exam?.examDescription}</Text>
+        <Text className="text-2xl font-semibold mb-4">{exam?.examStatus}</Text>
+
+        {/* Exam Parts */}
+        <Text className="text-3xl font-bold">Parts</Text>
+
+        
+        <Text className="text-xl font-semi-bold text-gray-500 mb-4">This test has {exam?.examParts?.length ?? 0} parts:</Text>
+        {/* map examParts, list */}
+        {exam?.examParts?.map((part, index) => {
+          return (
+            <View key={index} className="mb-4 pl-8">
+              <Text className="text-2xl font-semibold">{part.partName}</Text>
+              <Text className="text-xl font-semibold text-gray-500">{part.partDescription}</Text>
+            </View>
+          )
+        } )}
+
+        <View className="rounded bg-gray-100 p-4 ">
+          {/* My Score */}
+          <Text className="text-3xl font-bold">My Score</Text>
+          {/* Attempt # */}
+          <Text className="text-xl font-semi-bold text-gray-500 mb-4">Attempt {exam?.attemptCount}</Text>
+          {/* Score */}
+          <Text className="text-xl text-center font-semi-bold text-gray-500 mb-4">You scored {exam?.examScore ?? 0} out of {exam?.examTotalScore ?? 0} points</Text>
+        </View>
+         
+      </View>
+
+      <View
+        className="w-full"
+        style={{
+            bottom: 0,
+            position: "absolute",
+            padding: 10,
+        }}
+        >
+    <Button variant="default" className="mb-4">
+            <Text className="text-white">Ready? Take the test!</Text>
+        </Button>
+        </View>
     </View>
   );
 }

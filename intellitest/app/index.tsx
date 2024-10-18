@@ -15,11 +15,11 @@ export default function Index() {
     <View
       style={{
         flex: 1,
-        justifyContent: "flex-end",
+        justifyContent: "flex-start",
         alignItems: "center",
       }}
     >
-    <View className="flex-col gap-48 pb-8">
+    <View className="flex-col gap-32 pb-8 p-2">
       <View>
         {/* TODO: Change to a carousel */}
         <View className="flex flex-row justify-center">
@@ -30,7 +30,7 @@ export default function Index() {
         </View> 
         
         <Text className="text-4xl font-bold">Ready to <Text className="text-green-400 text-4xl font-bold">ace</Text> your next test?</Text>
-        <Text className="text-2xl font-bold ">Let's get started!</Text>
+        <Text className="text-2xl font-bold ">We're going to do greate</Text>
       </View>
       
 

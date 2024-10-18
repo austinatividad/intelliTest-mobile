@@ -9,7 +9,7 @@ type ExamItemProps = {
 };
 const ExamItem: React.FC<ExamItemProps> = ({ examName, examStatus, id, onPress }) => {
   return (
-    <TouchableOpacity onPress={() => onPress(id)} className="w-11/12 mt-5 p-4 bg-white rounded-lg border border-gray-300">
+    <TouchableOpacity onPress={() => onPress(id)} className="w-full mb-2 p-4 bg-white rounded-lg border border-gray-300">
       <View>
         <Text className="text-lg text-black font-bold">{examName}</Text>
         <Text className="text-base text-gray-500">{examStatus}</Text>

@@ -132,7 +132,7 @@ export default function RootLayout() {
                       </Text>
                     );
                   },
-                  headerRight: () => <ThemeToggle />,
+                  headerRight: () => <></>,
                 }}
               >
                 <Stack.Screen name="index" />
@@ -161,16 +161,16 @@ export default function RootLayout() {
                   }}
                 >
                 <ToggleGroupItem value="home" className="flex-1" style={{ flex: 1, alignItems: 'center', backgroundColor: 'transparent' }}>
-                  <House color={selectedValue === 'home' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000")} />
-                  <Text style={{ color: selectedValue === 'home' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000") }}>Home</Text>
+                  <House color={selectedValue === 'home' ? "#4ade80" : (isDarkColorScheme ? "#FFF" : "#000000")} />
+                  <Text style={{ color: selectedValue === 'home' ? "#4ade80" : (isDarkColorScheme ? "#FFF" : "#000000") }}>Home</Text>
                 </ToggleGroupItem>
                 <ToggleGroupItem value="exams" style={{ flex: 1, alignItems: 'center', backgroundColor: 'transparent'}}>
-                  <NotepadText color={selectedValue === 'exams' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000")} />
-                  <Text style={{ color: selectedValue === 'exams' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000") }}>My Exams</Text>
+                  <NotepadText color={selectedValue === 'exams' ? "#4ade80" : (isDarkColorScheme ? "#FFF" : "#000000")} />
+                  <Text style={{ color: selectedValue === 'exams' ? "#4ade80" : (isDarkColorScheme ? "#FFF" : "#000000") }}>My Exams</Text>
                 </ToggleGroupItem>
                 <ToggleGroupItem value="profile" style={{ flex: 1, alignItems: 'center', backgroundColor: 'transparent' }}>
-                  <CircleUserRound color={selectedValue === 'profile' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000")} />
-                  <Text style={{ color: selectedValue === 'profile' ? "green" : (isDarkColorScheme ? "#FFF" : "#000000") }}>Profile</Text>
+                  <CircleUserRound color={selectedValue === 'profile' ? "#4ade80" : (isDarkColorScheme ? "#FFF" : "#000000")} />
+                  <Text style={{ color: selectedValue === 'profile' ? "#4ade80" : (isDarkColorScheme ? "#FFF" : "#000000") }}>Profile</Text>
                 </ToggleGroupItem>
               </ToggleGroup>
               </View>

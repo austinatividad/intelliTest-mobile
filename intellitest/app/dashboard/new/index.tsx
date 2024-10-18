@@ -1,6 +1,6 @@
 import { ScrollView, View, Text, FlatList } from "react-native";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
-import { Button, buttonTextVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +20,7 @@ interface Document {
 }
 
 // Create 5 fake documents for testing
-const documents: Document[] = [
+const initialDocuments: Document[] = [
   { id: "1", fileName: "My MOBDEVE Notes.txt", fileType: fileTypes.text, isRemoved: false },
   { id: "2", fileName: "How to do Inheritance.pdf", fileType: fileTypes.image, isRemoved: false },
   { id: "3", fileName: "Top 10 Animes of all Time.txt", fileType: fileTypes.text, isRemoved: false },
@@ -32,7 +32,7 @@ const documents: Document[] = [
 export default function Index() {
   const router = useRouter();
   const { setLoading, setText } = useLoadingContext();
-
+  const [documents, setDocuments] = useState<Document[]>(initialDocuments); // State to store uploaded documents
   const [showDocuments, setShowDocuments] = useState(false); // State to toggle document visibility
   const [inputText, setInputText] = useState(""); // State to track textarea content
 
@@ -41,19 +41,23 @@ export default function Index() {
     setShowDocuments(!showDocuments); // Toggle showing the document list
   };
 
-  // Function to handle exam item press
+  // Function to handle exam item press (removes the document from the list)
   const handleExamPress = (id: string) => {
-    console.log("Document pressed with id:", id);
-    // Add logic to handle exam press event
+    const updatedDocuments = documents.map((doc) => 
+      doc.id === id ? { ...doc, isRemoved: true } : doc
+    );
+    setDocuments(updatedDocuments); // Update the state with the modified documents
   };
 
   const handleContinue = () => {
-    // Add logic to handle continue button press
     router.push({
-      pathname: "/dashboard/exam",
+      pathname: "/dashboard/new/options",
       params: { examId: "10" },
     });
-  }
+  };
+
+  // Filter out removed documents
+  const visibleDocuments = documents.filter(doc => !doc.isRemoved);
 
   // Check if the Generate Test button should be visible
   const isButtonVisible = inputText.trim().length > 0 || showDocuments;
@@ -68,7 +72,7 @@ export default function Index() {
         </Text>
 
         {/* Textarea to capture input */}
-        <Textarea 
+        <Textarea
           className="w-full mb-2"
           value={inputText}
           onChangeText={setInputText}
@@ -81,11 +85,11 @@ export default function Index() {
         <Text className="font-light text-gray-300">Max number of uploads: 5</Text>
 
         {/* Show list of uploaded documents when button is clicked */}
-        {showDocuments && (
+        {showDocuments && visibleDocuments.length > 0 && (
           <View className="mt-4">
             <Text className="text-xl font-bold mb-1">Uploaded Documents:</Text>
             <FlatList
-              data={documents}
+              data={visibleDocuments}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <DocumentItem
@@ -126,7 +130,7 @@ export default function Index() {
           }}
         >
           <Button variant="ghost" className="bg-gray-200">
-            <Text className="text-white">Generate Test</Text>
+            <Text className="text-white">Continue</Text>
           </Button>
         </View>
       )}

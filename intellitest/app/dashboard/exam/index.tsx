@@ -24,6 +24,7 @@ export default function Index() {
   if (exam == undefined)
   {
     //TODO: redirect to 404
+    //? Probably not needed for a mobile app
   }
   return (
     <View

@@ -132,6 +132,7 @@ export default function RootLayout() {
                       </Text>
                     );
                   },
+                  headerLeft: () => <></>,
                   headerRight: () => <></>,
                 }}
               >

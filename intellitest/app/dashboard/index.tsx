@@ -151,6 +151,7 @@
         ))}
 
       <Text className="pt-4 pl-4 font-bold text-xl mb-4">Latest Scores</Text>
+        {/* TODO: CHANGE TO A FLATLIST  */}
         {userData.recentScores.map((test, index) => (
           // set onPress to router.push existing test
           <View key={index} className=" border rounded-xl mx-4 mb-2 p-2">

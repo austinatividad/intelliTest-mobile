@@ -11,6 +11,7 @@ interface AQuestion {
     question: string;
     type: QuestionType;
     part: number; //part 1, part 2, etc.
+    points: number;
 }
 
 
@@ -36,10 +37,15 @@ interface IdentificationQuestion extends AQuestion {
 
 interface Rubric {
     criteria: string;
+    description: string;
     points: number;
 }
 
 
+interface Part {
+    partName: string;
+    partDescription: string;
+}
 
 //essay question
 interface EssayQuestion extends AQuestion {
@@ -74,8 +80,18 @@ const dummy = [
         id: "10",
         examName: "MOBDEVE - Recycler Views and Intents",
         examStatus: "Completed",
-        examDescription: "This is a test exam for MOBDEVE",
-        examParts: ["Part 1", "Part 2"],
+        attemptCount: 3,
+        examDescription: "This is an intelliTest for MOBDEVE! I should know what these are by now.",
+        examParts: [
+            {
+                partName: "Part 1",
+                partDescription: "Recycler Views",
+            },
+            {
+                partName: "Part 2",
+                partDescription: "Intents",
+            },
+        ],
         examScore: 70,
         examTotalScore: 70,
         examQuestions: [
@@ -111,10 +127,18 @@ const dummy = [
                 question: "Explain the usage of fragments.",
                 type: QuestionType.ESSAY,
                 part: 2,
-                rubric: {
-                    clarity: "Clear explanation of fragment usage",
-                    depth: "Detailed analysis of fragment life cycle"
-                }
+                rubric: [
+                    {
+                        criteria: "Content",
+                        description: "The content of the answer",
+                        points: 5
+                    },
+                    {
+                        criteria: "Grammar",
+                        description: "The grammar of the answer",
+                        points: 5
+                    }
+                ],
             }
         ]
     }
@@ -126,8 +150,9 @@ type ItemData = {
     id: string;
     examName: string;
     examStatus: string;
+    attemptCount?: number;
     examDescription: string;
-    examParts: string[];
+    examParts: Part[];
     examScore: number;
     examTotalScore: number;
     examQuestions: Question[];

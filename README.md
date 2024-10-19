@@ -1,3 +1,5 @@
+# [intelliTest](https://github.com/austinatividad/intelliTest-mobile)
+A mobile application for comprehensive AI Mock tests
 # Running intelliTest
 
 1. Navigate to the folder

@@ -19,12 +19,12 @@ export default function QuestionPage() {
 
     // Redirect to /summary if questionNumber exceeds the number of questions
     useEffect(() => {
-        if (currentQuestionIndex >= dummy[3].examQuestions.length) {
+        if (currentQuestionIndex >= dummy[0].examQuestions.length) {
             router.navigate(`/dashboard/exam/${examID}/summary`);
         }
     }, [currentQuestionIndex, examID, router]);
 
-    const currentExam = dummy[3];
+    const currentExam = dummy[0];
     const currentQuestion = currentExam.examQuestions[currentQuestionIndex];
 
     const handlePress = useCallback(() => {

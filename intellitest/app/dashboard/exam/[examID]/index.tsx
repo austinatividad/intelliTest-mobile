@@ -13,6 +13,10 @@ import {Search} from "lucide-react-native";
 import { dummy, ItemData } from "@/lib/dummy_data";
 
 
+// TODO: Fix lint errors
+// TODO: breaking bug exists when going from summary to results. it redirects to results but goes back to summary after. 
+//           - try implementing useEffect on the conditional redirect
+
 export default function QuestionPage() {
     const router = useRouter();
     const { questionNumber, examID } = useLocalSearchParams();

@@ -14,13 +14,6 @@ import { dummy, ItemData } from "@/lib/dummy_data";
 
 export default function summaryPage() {
     const router = useRouter();
-    const { examID } = useLocalSearchParams();
-    const onGradeMe = () => {
-        console.log("Grading...")
-        router.navigate(
-            "/dashboard/exam/" + examID + "/results"
-        )
-    }
     return (
         <View 
         className="p-4"
@@ -28,20 +21,21 @@ export default function summaryPage() {
             flex: 1,
             gap: 10,
         }}>
-            <Text>You made it to the end!</Text>
-            <Text>Here is a summary of your answers</Text>  
+            <Text>Good Job!</Text>
+            <Text>45 / 50</Text>  
+            <Text>25 out of 25 items answered</Text>  
 
             <View className="border bg-gray-100 p-4">
-                <Text>Insert Question and Answer Summary Here</Text>
+                <Text>Insert Question and Answer and Answer key Here</Text>
                 {/* dummy data */}
                 
             </View> 
-            <Button onPress={onGradeMe}>
-                <Text>Grade Me!</Text>
+            <Button>
+                <Text>Retake Test</Text>
             </Button>
 
             <Button variant="secondary">
-                <Text>Review Answers</Text>
+                <Text>Back to My Exams</Text>
             </Button>
         </View>
     )

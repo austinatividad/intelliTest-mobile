@@ -1,80 +1,90 @@
-import { View, FlatList } from "react-native";
-import { Text } from "@/components/ui/text";
-import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
-import { Button } from "@/components/ui/button";
-import { Image } from "lucide-react-native";
+import { useEffect } from "react";
+import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
-import React from "react";
-import { InputWithIcon } from "@/components/ui/input-with-icon";
-
-import {Search} from "lucide-react-native";
-
-import { dummy, ItemData } from "@/lib/dummy_data";
-
-
-// TODO: Fix lint errors
-// TODO: breaking bug exists when going from summary to results. it redirects to results but goes back to summary after. 
-//           - try implementing useEffect on the conditional redirect
+import { Button } from "@/components/ui/button";
+import { dummy } from "@/lib/dummy_data";
+import { MultipleChoiceItem } from "@/components/IntelliTest/Exams/multiple-choice-item";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function QuestionPage() {
     const router = useRouter();
     const { questionNumber, examID } = useLocalSearchParams();
-    const { setLoading, setText } = useLoadingContext();
+    const currentQuestionIndex = Number(questionNumber) - 1; // Zero-based index
 
-    const currentQuestionIndex = Number(questionNumber) - 1; // Since question numbers might be 1-based, we convert it to 0-based index
+    // Redirect to /summary if questionNumber exceeds the number of questions
+    useEffect(() => {
+        if (currentQuestionIndex >= dummy[3].examQuestions.length) {
+            router.navigate(`/dashboard/exam/${examID}/summary`);
+        }
+    }, [currentQuestionIndex, examID, router]);
 
-    console.log("Question Page")
-    console.log(questionNumber);
-    console.log(typeof questionNumber); 
-
-    console.log("Exam ID")
-    console.log(examID);
-    console.log(typeof examID);
-
-    // Ensure exam questions exist before trying to access them
     const currentExam = dummy[3];
-    const totalQuestions = currentExam.examQuestions.length;
-
-    // Redirect to /summary if questionNumber is greater than the number of questions
-    if (currentQuestionIndex >= totalQuestions) {
-        router.navigate("/dashboard/exam/" + examID + "/summary");
-        return null; // Stop rendering the component when redirecting
-    }
-
     const currentQuestion = currentExam.examQuestions[currentQuestionIndex];
 
     const handlePress = () => {
-        console.log("Pressed");
         router.navigate({
-            pathname: "/dashboard/exam/" + examID,
-            params: { questionNumber: Number(questionNumber) + 1 }
+            pathname: `/dashboard/exam/${examID}`,
+            params: { questionNumber: Number(questionNumber) + 1 },
         });
     };
 
-    if (currentExam && currentExam.examQuestions) {
-        console.log(currentQuestion.question);
-        console.log(currentQuestion.type);
-        console.log(currentQuestion.answer);
-    } else {
-        console.log("Exam questions not found");
-    }
+
+
+    if (!currentQuestion) return null;
 
     return (
-        <View 
-        className="p-4"
-        style={{
-            flex: 1,
-        }}>
-            <Text>Question Page</Text>
-            <Text>Question Number: {questionNumber}</Text>
-            <Text>Exam ID: {examID}</Text>
-            <Text>Type: {currentQuestion.type}</Text>
-            <Text>Question: {currentQuestion.question}</Text>
+        <View className="" style={{ flex: 1 }}>
+            <View className="p-4 flex flex-col gap-4">
+                <Text className="text-xl font-bold">{currentQuestion.part.partName}: {currentQuestion.part.partDescription}</Text>
+                <Text>Question {questionNumber}</Text>
+                <View className="rounded-3xl bg-gray-100 p-4 h-auto">
+                    <Text>{currentQuestion.question}</Text>
+                </View>
 
-            <Button onPress={handlePress}>
-                <Text>Next</Text>
-            </Button>
+                {/*if currentQuestion.type == multiple_choice, render each option using a map which border outline gets shown when pressed */}
+                {currentQuestion.type === "multiple_choice" && (
+                    <View className="flex flex-col gap-4">
+                        {currentQuestion.options.map((option, index) => (
+                            <MultipleChoiceItem key={index} text={option} />
+                        ))}
+                    </View>
+                )}
+
+                {/*if currentQuestion.type == true_false, render 2 MultipleChoiceItem*/}
+                {currentQuestion.type === "true_false" && (
+                    <View className="flex flex-col gap-4">
+                        <MultipleChoiceItem text="True" />
+                        <MultipleChoiceItem text="False" />
+                    </View>
+                )}                
+
+                {/*if currentQuestion.type == identification, render a text input*/}
+                {currentQuestion.type === "identification" && (
+                    <View className="flex flex-col gap-4">
+                        <Label nativeID={"QuestionInput"}>Answer</Label>
+                        <Input />
+                    </View>
+                )}
+
+                {/*if currentQuestion.type === "essay", render a textarea*/}
+                {currentQuestion.type === "essay" && (
+                    <View className="flex flex-col gap-4">
+                        <Label nativeID={"QuestionInput"}>Answer</Label>
+                    <Textarea numberOfLines={20}/>
+                    </View>
+                )}
+            </View>
+            
+
+
+            <View className="absolute bottom-0 w-full p-4">
+                <Button onPress={handlePress} className="w-full">
+                    <Text className="text-white">Next</Text>
+                </Button>
+            </View>
+            
         </View>
     );
 }

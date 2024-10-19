@@ -11,6 +11,8 @@ import { InputWithIcon } from "@/components/ui/input-with-icon";
 import {Search} from "lucide-react-native";
 
 import { dummy, ItemData } from "@/lib/dummy_data";
+
+
 export default function Index() {
   const router = useRouter();
 

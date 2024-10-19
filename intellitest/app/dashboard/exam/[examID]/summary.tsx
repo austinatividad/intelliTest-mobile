@@ -15,6 +15,9 @@ import { dummy, ItemData } from "@/lib/dummy_data";
 export default function summaryPage() {
     const router = useRouter();
     const { examID } = useLocalSearchParams();
+
+
+    
     const onGradeMe = () => {
         console.log("Grading...")
         router.navigate(
@@ -36,7 +39,7 @@ export default function summaryPage() {
 
             <View className="rounded-3xl bg-gray-100 p-6 gap-4 mb-10">
                 <Text className="font-bold">Part 1: Recycler Views</Text>
-                <View className="flex flex-col pl-2 bg-white rounded-2xl">
+                <View className="flex flex-col pl-2 py-4 bg-white rounded-2xl">
                     <Text className="px-4 text-gray-500">Question 1</Text>
                     <Text className="px-4">What is a RecyclerView?</Text>
 
@@ -44,7 +47,7 @@ export default function summaryPage() {
                     <Text className="px-4">A: A view that recycles views</Text>
                 </View>
 
-                <View className="flex flex-col pl-2 bg-white rounded-2xl">
+                <View className="flex flex-col pl-2 py-4 bg-white rounded-2xl">
                     <Text className="px-4 text-gray-500">Question 2</Text>
                     <Text className="px-4">Is RecyclerView a layout?</Text>
 
@@ -54,7 +57,7 @@ export default function summaryPage() {
 
                 <Text className="font-bold">Part 2: Intents</Text>
 
-                <View className="flex flex-col pl-2 bg-white rounded-2xl">
+                <View className="flex flex-col pl-2 py-4 bg-white rounded-2xl">
                     <Text className="px-4 text-gray-500">Question 3</Text>
                     <Text className="px-4">What is the purpose of an intent?</Text>
 
@@ -62,7 +65,7 @@ export default function summaryPage() {
                     <Text className="px-4">To start activities</Text>
                 </View>
 
-                <View className="flex flex-col pl-2 bg-white rounded-2xl">
+                <View className="flex flex-col pl-2 py-4 bg-white rounded-2xl">
                     <Text className="px-4 text-gray-500">Question 4</Text>
                     <Text className="px-4">Explain the usage of fragments.</Text>
 
@@ -70,7 +73,7 @@ export default function summaryPage() {
                     <Text className="px-4">A RecyclerView is a UI component in Android that displays large sets of data efficiently by reusing a small pool of views. It's a ViewGroup that contains views that correspond to data, and it can be added to a layout like any other UI element. </Text>
                 </View>
                 
-                <View className="flex flex-col pl-2 bg-white rounded-2xl">
+                <View className="flex flex-col pl-2 py-4 bg-white rounded-2xl">
                     <Text className="px-4 text-gray-500">Question 5</Text>
                     <Text className="px-4">Why do we need to test long text lengths?</Text>
 
@@ -105,6 +108,8 @@ In conclusion, testing long text lengths is an important process for ensuring th
             <Button variant="secondary">
                 <Text>Review Answers</Text>
             </Button>
+
+            <View className="mb-10"></View>
         </ScrollView>
     )
 }

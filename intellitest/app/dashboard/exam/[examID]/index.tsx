@@ -7,11 +7,15 @@ import { MultipleChoiceItem } from "@/components/IntelliTest/Exams/multiple-choi
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import RubricModal from "@/components/ui/rubricModal";
+import React, { useState, useCallback } from "react";
 
 export default function QuestionPage() {
     const router = useRouter();
     const { questionNumber, examID } = useLocalSearchParams();
     const currentQuestionIndex = Number(questionNumber) - 1; // Zero-based index
+    const [showRubric, setShowRubric] = useState(false);
+    const [rubricText, setRubricText] = useState("");
 
     // Redirect to /summary if questionNumber exceeds the number of questions
     useEffect(() => {
@@ -23,14 +27,21 @@ export default function QuestionPage() {
     const currentExam = dummy[3];
     const currentQuestion = currentExam.examQuestions[currentQuestionIndex];
 
-    const handlePress = () => {
+    const handlePress = useCallback(() => {
         router.navigate({
             pathname: `/dashboard/exam/${examID}`,
             params: { questionNumber: Number(questionNumber) + 1 },
         });
-    };
+    }, [questionNumber, examID, router]);
 
+    const handleRubricPress = useCallback((text) => {
+        setRubricText(text);
+        setShowRubric(true);
+    }, []);
 
+    const handleRubricClose = useCallback(() => {
+        setShowRubric(false);
+    }, []);
 
     if (!currentQuestion) return null;
 
@@ -43,7 +54,7 @@ export default function QuestionPage() {
                     <Text>{currentQuestion.question}</Text>
                 </View>
 
-                {/*if currentQuestion.type == multiple_choice, render each option using a map which border outline gets shown when pressed */}
+                {/* Render multiple choice options */}
                 {currentQuestion.type === "multiple_choice" && (
                     <View className="flex flex-col gap-4">
                         {currentQuestion.options.map((option, index) => (
@@ -52,15 +63,15 @@ export default function QuestionPage() {
                     </View>
                 )}
 
-                {/*if currentQuestion.type == true_false, render 2 MultipleChoiceItem*/}
+                {/* Render true/false options */}
                 {currentQuestion.type === "true_false" && (
                     <View className="flex flex-col gap-4">
                         <MultipleChoiceItem text="True" />
                         <MultipleChoiceItem text="False" />
                     </View>
-                )}                
+                )}
 
-                {/*if currentQuestion.type == identification, render a text input*/}
+                {/* Render identification input */}
                 {currentQuestion.type === "identification" && (
                     <View className="flex flex-col gap-4">
                         <Label nativeID={"QuestionInput"}>Answer</Label>
@@ -68,23 +79,31 @@ export default function QuestionPage() {
                     </View>
                 )}
 
-                {/*if currentQuestion.type === "essay", render a textarea*/}
+                {/* Render essay with rubric modal */}
                 {currentQuestion.type === "essay" && (
-                    <View className="flex flex-col gap-4">
-                        <Label nativeID={"QuestionInput"}>Answer</Label>
-                    <Textarea numberOfLines={20}/>
-                    </View>
+                    <>
+                        <RubricModal 
+                            visible={showRubric} 
+                            onClose={handleRubricClose} 
+                            criteria={rubricText}
+                        />
+
+                        <View className="flex flex-col gap-4">
+                            <Label nativeID={"QuestionInput"}>Answer</Label>
+                            <Textarea numberOfLines={20} />
+                            <Button className="w-1/2" variant="secondary" onPress={() => handleRubricPress("To gain a perfect score of 5, your essay should discuss Fragmentation in Android Development")}>
+                                <Text>Rubrics</Text>
+                            </Button>
+                        </View>
+                    </>
                 )}
             </View>
-            
-
 
             <View className="absolute bottom-0 w-full p-4">
                 <Button onPress={handlePress} className="w-full">
                     <Text className="text-white">Next</Text>
                 </Button>
             </View>
-            
         </View>
     );
 }

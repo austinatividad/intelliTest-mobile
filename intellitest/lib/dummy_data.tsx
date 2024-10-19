@@ -10,7 +10,7 @@ enum QuestionType {
 interface AQuestion {
     question: string;
     type: QuestionType;
-    part: number; //part 1, part 2, etc.
+    part: Part;
     points: number;
 }
 
@@ -99,7 +99,10 @@ const dummy = [
                 id: "q1",
                 question: "What is a recycler view?",
                 type: QuestionType.MULTIPLE_CHOICE,
-                part: 1,
+                part: {
+                    partName: "Part 1",
+                    partDescription: "Recycler Views",
+                },
                 options: [
                     "A: A view that recycles views", 
                     "B: A view that recycles data", 
@@ -112,21 +115,30 @@ const dummy = [
                 id: "q2",
                 question: "Is RecyclerView a layout?",
                 type: QuestionType.TRUE_FALSE,
-                part: 1,
+                part: {
+                    partName: "Part 1",
+                    partDescription: "Recycler Views",
+                },
                 answer: false
             },
             {
                 id: "q3",
                 question: "What is the purpose of an intent?",
                 type: QuestionType.IDENTIFICATION,
-                part: 2,
+                part: {
+                    partName: "Part 2",
+                    partDescription: "Intents",
+                },
                 answer: "To start activities"
             },
             {
                 id: "q4",
                 question: "Explain the usage of fragments.",
                 type: QuestionType.ESSAY,
-                part: 2,
+                part: {
+                    partName: "Part 2",
+                    partDescription: "Intents",
+                },
                 rubric: [
                     {
                         criteria: "Content",

@@ -35,10 +35,10 @@ const user: User = {
 
 // Create dummy tests with unique ids
 const userTests: Test[] = [
-  { id: "1", testName: "Mister Donut Facts", userScore: -1, testScore: 100 },
-  { id: "2", testName: "Pickup Coffee Test", userScore: -1, testScore: 10 },
-  { id: "3", testName: "Top 10 food of all time", userScore: -1, testScore: 10 },
-  { id: "4", testName: "MOBDEVE Android Concepts", userScore: -1, testScore: 30 },
+  { id: "1", testName: "Dummy Display for lists", userScore: -1, testScore: 100 },
+  { id: "2", testName: "To open an intelliTest", userScore: -1, testScore: 10 },
+  { id: "3", testName: "Go to My Exam and open", userScore: -1, testScore: 10 },
+  { id: "4", testName: "MOBDEVE - Recycler Views and Intents", userScore: -1, testScore: 30 },
 ];
 
 const userScores: Test[] = [

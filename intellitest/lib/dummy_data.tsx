@@ -59,23 +59,6 @@ type Question = MultipleChoiceQuestion | TrueFalseQuestion | IdentificationQuest
 
 const dummy = [
     {
-        id: "0",
-        examName: "MOBDEVE - Data Driven Views",
-        examStatus: "Completed"
-    },
-
-    {
-        id: "1",
-        examName: "CSOPESY - Process Scheduling",
-        examStatus: "Not Yet Answered"
-    },
-
-    {
-        id: "2",
-        examName: "MOBDEVE - Android Development",
-        examStatus: "70/70 - Attempt 1"
-    },
-    {
         //complete version
         id: "10",
         examName: "MOBDEVE - Recycler Views and Intents",
@@ -153,7 +136,25 @@ const dummy = [
                 ],
             }
         ]
-    }
+    },
+    {
+        id: "0",
+        examName: "MOBDEVE - Data Driven Views (Dummy Data)",
+        examStatus: "Completed"
+    },
+
+    {
+        id: "1",
+        examName: "CSOPESY - Process Scheduling (Dummy Data)",
+        examStatus: "Not Yet Answered"
+    },
+
+    {
+        id: "2",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    
 ];
 
 

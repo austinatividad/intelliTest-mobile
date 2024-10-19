@@ -156,6 +156,49 @@ type ItemData = {
     examScore: number;
     examTotalScore: number;
     examQuestions: Question[];
-
 };
-export {dummy, ItemData};
+
+
+
+
+// stores the data of the user's attempt at a test
+type AttemptData = {
+    examId: string;
+    attemptNumber: number;
+    answers: {
+        questionId: string;
+        answer: string | boolean;
+    }[];
+    score: number;
+    totalScore: number;
+    submitted: boolean;
+}
+
+
+const dummyAttempt: AttemptData = {
+    examId: "10",
+    attemptNumber: 1,
+    answers: [
+        {
+            questionId: "1",
+            answer: "A"
+        },
+        {
+            questionId: "2",
+            answer: false
+        },
+        {
+            questionId: "3",
+            answer: "To start activities"
+        },
+        {
+            questionId: "4",
+            answer: "Fragments are reusable user interface components that can be used to create multi-pane user interfaces."
+        }
+    ],
+    score: 70,
+    totalScore: 70,
+    submitted: true
+}
+
+export {dummy, ItemData, AttemptData, dummyAttempt};

@@ -26,6 +26,15 @@ export default function Index() {
     //TODO: redirect to 404
     //? Probably not needed for a mobile app
   }
+
+  const handlePress = () => {
+    console.log("Pressed")
+    router.navigate({
+      pathname: "/dashboard/exam/" + examId ,
+      params: {questionNumber: 1}
+
+    })
+  }
   return (
     <View
       style={{
@@ -71,7 +80,7 @@ export default function Index() {
             padding: 10,
         }}
         >
-    <Button variant="default" className="mb-4">
+    <Button variant="default" className="mb-4" onPress={handlePress}>
             <Text className="text-white">Ready? Take the test!</Text>
         </Button>
         </View>

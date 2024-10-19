@@ -30,7 +30,7 @@ const DARK_THEME: Theme = {
 };
 
 // Define all valid paths as a union type
-type ValidPaths = "/dashboard" | "/dashboard/exams" | "/dashboard/profile";
+const ValidPaths = ["/dashboard", "/dashboard/exams", "/dashboard/profile"];
 const pathMap: Record<string, string> = {
   home: "/dashboard",
   exams: "/dashboard/exams",
@@ -55,9 +55,9 @@ export default function RootLayout() {
   const router = useRouter();
 
   // Check if the current route is "/dashboard" or any of its sub-routes
-  const isDashboardRoute = segments[0] === 'dashboard';
+  const isDashboardRoute = (ValidPaths.includes("/" + segments.join("/"))) ;
   console.log(segments);
-
+  console.log(isDashboardRoute);
   const { colorScheme, setColorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
   const [selectedValue, setSelectedValue] = React.useState("home");
@@ -77,8 +77,8 @@ export default function RootLayout() {
     if (typeof value === "string") {
       setSelectedValue(value);  // Update the selected value
       const path = pathMap[value];  // Get the path corresponding to the value
-      if (path) {
-        router.navigate({ pathname: path as ValidPaths });  // Navigate to the path
+      if (ValidPaths.includes(path)) {
+        router.navigate({ pathname: path });  // Navigate to the path
       }
     }
   };

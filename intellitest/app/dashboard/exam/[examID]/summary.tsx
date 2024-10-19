@@ -18,8 +18,23 @@ export default function summaryPage() {
         className="p-4"
         style={{
             flex: 1,
+            gap: 10,
         }}>
-            <Text>Summary Page</Text>   
+            <Text>You made it to the end!</Text>
+            <Text>Here is a summary of your answers</Text>  
+
+            <View className="border bg-gray-100 p-4">
+                <Text>Insert Question and Answer Summary Here</Text>
+                {/* dummy data */}
+                
+            </View> 
+            <Button>
+                <Text>Grade Me!</Text>
+            </Button>
+
+            <Button variant="secondary">
+                <Text>Review Answers</Text>
+            </Button>
         </View>
     )
 }

@@ -7,6 +7,9 @@ import { Image } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { Input } from "@/components/ui/input";
 import React from "react";
+import { supabase } from "@/lib/supabase";
+import { signInGoogle } from "@/utils/auth";
+import { SignInGoogleButton } from "@/components/IntelliTest/Buttons/signInWithGoogleButton";
 
 export default function Index() {
   const router = useRouter();
@@ -27,6 +30,13 @@ export default function Index() {
       });
       };
     }
+
+  async function handleGoogleAuth() {
+    // setLoading(true);
+    console.log("Google Auth");
+    const { data, error } = await signInGoogle();
+    console.log(data, error);
+  }
 
   // function emailChangeHandler(text: string) {
   //   setEmail(text);
@@ -67,9 +77,11 @@ export default function Index() {
           <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
         </View>
 
-        <Button>
+        {/* <Button 
+          onPress={handleGoogleAuth}>
           <Text className="text-2xl">Continue with Google</Text>
-        </Button>
+        </Button> */}
+        <SignInGoogleButton />
     </View>
   );
 }

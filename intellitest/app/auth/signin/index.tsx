@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import { useLocalSearchParams } from 'expo-router';
 import { Input } from "@/components/ui/input";
 import React from "react";
+import { signIn } from "@/utils/auth";
 
 export default function Index() {
   const router = useRouter();
@@ -28,7 +29,15 @@ export default function Index() {
   function handleAuth() {
     //TODO: Add actual authentication logic and pass email to the next page
     //TODO: Replace this with the page
-    router.navigate("/dashboard")
+    signIn(email, password).then(({data, error}) => {
+      if (error) {
+        console.error(error.name);
+        // You can put how to handle different errors here
+        alert(error.message);
+        return;
+      }
+      router.navigate("/dashboard");
+    });
   }
 
   const { setLoading, setText } = useLoadingContext();

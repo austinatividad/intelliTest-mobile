@@ -24,3 +24,39 @@ export async function signInGoogle() {
         return { error: 'Unexpected error during Google sign-in' };
     }
 }
+
+export async function signUp(email: string, password: string) {
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+    });
+
+    return { data, error };
+}
+
+export async function getSession() {
+    const { data, error } = await supabase.auth.getSession();
+
+    return { data, error };
+}
+
+export async function signIn(email: string, password: string) {
+    const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    return { data, error };
+}
+
+export async function doesEmailExist(email: string): Promise<boolean | null> {
+    const { data, error } = await supabase
+      .rpc('is_email_exist', { email });
+  
+    if (error) {
+      console.error('Error calling function:', error);
+      return null;
+    }
+  
+    return data;
+  }

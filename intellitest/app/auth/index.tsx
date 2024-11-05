@@ -8,17 +8,21 @@ import { useRouter } from "expo-router";
 import { Input } from "@/components/ui/input";
 import React from "react";
 import { supabase } from "@/lib/supabase";
-import { signInGoogle } from "@/utils/auth";
-import { SignInGoogleButton } from "@/components/IntelliTest/Buttons/signInWithGoogleButton";
+import { getSession, doesEmailExist } from "@/utils/auth";
+// import { signInGoogle } from "@/utils/auth";
+// import { SignInGoogleButton } from "@/components/IntelliTest/Buttons/signInWithGoogleButton";
 
-export default function Index() {
+export default async function Index() {
   const router = useRouter();
   const [email, setEmail] = React.useState('');  // Using state to store email input
-
-  function handleAuth() {
+  const session = await getSession();
+  if (session.data) {
+    router.navigate("/dashboard");
+  }
+  async function handleAuth() {
     // setLoading(true);
-    //TODO: Add actual authentication logic and pass email to the next page
-    if (email == "email@gmail.com") {
+
+    if (await doesEmailExist(email)) {
       router.push({
         pathname: "/auth/signin",
         params: {email: email}
@@ -28,14 +32,14 @@ export default function Index() {
         pathname: "/auth/signup",
         params: {email: email}
       });
-      };
     }
+  }
 
   async function handleGoogleAuth() {
     // setLoading(true);
     console.log("Google Auth");
-    const { data, error } = await signInGoogle();
-    console.log(data, error);
+    // const { data, error } = await signInGoogle();
+    // console.log(data, error);
   }
 
   // function emailChangeHandler(text: string) {
@@ -81,7 +85,7 @@ export default function Index() {
           onPress={handleGoogleAuth}>
           <Text className="text-2xl">Continue with Google</Text>
         </Button> */}
-        <SignInGoogleButton />
+        {/* <SignInGoogleButton /> */}
     </View>
   );
 }

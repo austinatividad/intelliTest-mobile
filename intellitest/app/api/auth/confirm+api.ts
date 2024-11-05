@@ -1,0 +1,1 @@
+import { type EmailOtpType } from "@supabase/supabase-js";

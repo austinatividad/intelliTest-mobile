@@ -8,6 +8,8 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 import { Input } from "@/components/ui/input";
 import React from "react";
+import { supabase } from "@/lib/supabase";
+import { getSession, signUp } from "@/utils/auth";
 
 export default function Index() {
   const router = useRouter();
@@ -24,11 +26,32 @@ export default function Index() {
     }
   }, [emailParam]);
 
-  
   function handleAuth() {
-    //TODO: Add actual authentication logic and pass email to the next page
-    //TODO: Replace this with the page
-    router.navigate("/dashboard")
+    if (password !== passwordConfirm) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    signUp(email, password).then(({data, error}) => {
+      if (error) {
+        console.error(error.name);
+        // You can put how to handle different errors here
+        alert(error.message);
+        return;
+      }
+
+      getSession().then(({data, error}) => {
+        if (error) {
+          console.error(error.name);
+          // You can put how to handle different errors here
+          alert(error.message);
+          return;
+        }
+        console.log(data);
+        router.navigate("/dashboard");
+      });
+      // router.navigate("/dashboard");
+    });
   }
 
   const { setLoading, setText } = useLoadingContext();

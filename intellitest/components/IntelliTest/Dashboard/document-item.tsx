@@ -22,7 +22,8 @@ const DocumentItem: React.FC<DocumentItemProps> = ({ fileName, fileType, id, isR
             <View className="flex flex-row gap-3">
                 {/* switch between FileText and FileImage depending on the fileType */}
                 {fileType === fileTypes.image ? <FileImage size={23} color ="#4ade80"/> : <FileText size={23} color ="#4ade80"/>}
-                <Text className="text-lg text-black font-bold">{fileName}</Text>
+                <Text className="text-lg text-black font-bold">{fileName.length > 30 ? `${fileName.substring(0, 30)}...` : fileName}</Text>
+                
                 {/* floating X top right */}
                 <View style={{ position: 'absolute', right: 0, top: 0 }}>
                     <X size={25} color ="#000" onPress={()=> onPress(id)}/>

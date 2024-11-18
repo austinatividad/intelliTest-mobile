@@ -2,37 +2,36 @@ import { ScrollView, View, Text, FlatList } from "react-native";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "expo-router";
+import * as DocumentPicker from 'expo-document-picker';
 import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { DocumentItem } from "@/components/IntelliTest/Dashboard/document-item"; // Import ExamItem
 import { X } from "lucide-react-native";
 
 enum fileTypes {
-  "text",
-  "image"
+  'text',
+  'image',
+  // Add other file types as needed
 }
 
 interface Document {
   id: string;
   fileName: string;
   fileType: fileTypes;
+  uri: string;
   isRemoved: boolean;
 }
 
-// Create 5 fake documents for testing
-const initialDocuments: Document[] = [
-  { id: "1", fileName: "My MOBDEVE Notes.txt", fileType: fileTypes.text, isRemoved: false },
-  { id: "2", fileName: "How to do Inheritance.pdf", fileType: fileTypes.image, isRemoved: false },
-  { id: "3", fileName: "Top 10 Animes of all Time.txt", fileType: fileTypes.text, isRemoved: false },
-  { id: "4", fileName: "notes4", fileType: fileTypes.text, isRemoved: false },
-  { id: "5", fileName: "Hooray.png", fileType: fileTypes.image, isRemoved: false },
-  { id: "6", fileName: "notes6", fileType: fileTypes.text, isRemoved: false },
-];
+// the interface for the exam input content, will be used to store the content of the exam input and pass it to the next page
+interface ExamInputContent {
+  inputText: string;
+  documents: Document[];
+}
 
 export default function Index() {
   const router = useRouter();
   const { setLoading, setText } = useLoadingContext();
-  const [documents, setDocuments] = useState<Document[]>(initialDocuments); // State to store uploaded documents
+  const [documents, setDocuments] = useState<Document[]>([]); // State to store uploaded documents
   const [showDocuments, setShowDocuments] = useState(false); // State to toggle document visibility
   const [inputText, setInputText] = useState(""); // State to track textarea content
 
@@ -43,17 +42,56 @@ export default function Index() {
 
   // Function to handle exam item press (removes the document from the list)
   const handleExamPress = (id: string) => {
-    const updatedDocuments = documents.map((doc) => 
-      doc.id === id ? { ...doc, isRemoved: true } : doc
-    );
+    console.log("deleted!")
+    const updatedDocuments = documents.filter((doc) => doc.id !== id);
     setDocuments(updatedDocuments); // Update the state with the modified documents
   };
 
   const handleContinue = () => {
+    // setup the exam input content
+    const examInputContent: ExamInputContent = {
+      inputText,
+      documents,
+    };
+    console.log(examInputContent);
     router.push({
       pathname: "/dashboard/new/options",
-      params: { examId: "10" },
+      params: { examInputContent: JSON.stringify(examInputContent) },
     });
+  };
+
+  
+  const handleDocumentSelection = async () => {
+    // alert that the user can only upload 5 documents
+    if (documents.length >= 5) {
+      alert("You can only upload 5 documents. Remove a document to upload a new one.");
+      return;
+    }
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*', // Allow all file types; adjust as needed
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled) {
+        console.log('Document selection canceled');
+      } else {
+        console.log(result);
+        result.assets.map((asset) => {
+          const newDocument: Document = {
+            id: Date.now().toString(),
+            fileName: asset.name,
+            fileType: determineFileType(asset.name), // Implement this function based on your fileTypes enum
+            uri: asset.uri,
+            isRemoved: false,
+          };
+          setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
+          setShowDocuments(true);
+        });
+      }
+    } catch (error) {
+      console.error('Error selecting document:', error);
+    }
   };
 
   // Filter out removed documents
@@ -79,7 +117,7 @@ export default function Index() {
         />
 
         {/* Upload Documents Button */}
-        <Button variant="secondary" className="w-1/2" onPress={handleUploadClick}>
+        <Button variant="secondary" className="w-1/2" onPress={handleDocumentSelection}>
           <Text>Upload Documents</Text>
         </Button>
         <Text className="font-light text-gray-500">Max number of uploads: 5</Text>
@@ -103,6 +141,7 @@ export default function Index() {
             />
           </View>
         )}
+
       </View>
 
       {/* Conditionally render the Generate Test button */}
@@ -137,3 +176,21 @@ export default function Index() {
     </View>
   );
 }
+function determineFileType(name: string): fileTypes {
+  const extension = name.split('.').pop()?.toLowerCase();
+  switch (extension) {
+    case 'txt':
+    case 'doc':
+    case 'docx':
+    case 'pdf':
+      return fileTypes.text;
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'gif':
+      return fileTypes.image;
+    default:
+      throw new Error(`Unsupported file type: ${extension}`);
+  }
+}
+

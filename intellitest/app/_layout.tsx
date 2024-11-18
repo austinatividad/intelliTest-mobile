@@ -142,13 +142,6 @@ export default function RootLayout() {
                     headerShown: false,
                   }}
                 />
-                <Stack.Screen
-                  name="dashboard/index"
-                  options={{
-                    gestureEnabled: false,
-                    headerShown: false,
-                  }}
-                />
 
               </Stack>
 

@@ -1,9 +1,12 @@
 import OpenAI from 'openai';
-import { getPrompt } from  './promptList'
+import { getPrompt } from  './promptList';
+
 
 const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY, // Ensure your API key is stored securely
+    apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '', // Ensure your API key is stored securely
   });
+
+ 
   
 
 //   const params: OpenAI.Chat.ChatCompletionCreateParams = {

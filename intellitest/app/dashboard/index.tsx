@@ -8,6 +8,11 @@ import { NotebookText } from "lucide-react-native";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item"; // Import ExamItem component
 import { GenerateButton } from "@/components/IntelliTest/Buttons/generateButton"; // Import generateButton component
 
+//openaiClient and promptList debug
+// TODO: Remove this code after testing.
+// import { promptList } from "@/utils/promptList";
+// import { generateOutput, testPromptWithReplacements } from "@/utils/openaiClient";
+
 interface User {
   firstName: string;
   lastName: string;
@@ -62,6 +67,19 @@ export default function Index() {
       setFirstName(user.firstName);
     }
   }, [user.firstName]);
+
+
+  //debug - openaiClient and promptList
+  // TODO: Remove this code after testing.
+  // React.useEffect(() => {
+  //   console.log("is this working?")
+  //   async function testOpenaiClient() {
+  //     const prompt = 'testPrompt'
+  //     const response = await testPromptWithReplacements({name: "Josh", profession: "Software Engineer"});
+  //     console.log(response);
+  //   }
+  //   testOpenaiClient();
+  // }, []);
 
 
   const handleExamPress = (id: string) => {

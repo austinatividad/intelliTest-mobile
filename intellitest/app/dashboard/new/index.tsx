@@ -64,25 +64,25 @@ export default function Index() {
 
   return (
     <View style={{ flex: 1 }}>
-      <View className="p-4">
+      <View className="p-4 pt-12">
         <Text className="text-3xl font-bold">Generate a Mock Test</Text>
 
         <Text className="flex w-full justify-left text-left pb-2 text-xl">
           You can paste your notes, upload documents, or take pictures.
         </Text>
 
-        {/* Textarea to capture input */}
         <Textarea
           className="w-full mb-2"
           value={inputText}
           onChangeText={setInputText}
+          numberOfLines={8}
         />
 
         {/* Upload Documents Button */}
         <Button variant="secondary" className="w-1/2" onPress={handleUploadClick}>
           <Text>Upload Documents</Text>
         </Button>
-        <Text className="font-light text-gray-300">Max number of uploads: 5</Text>
+        <Text className="font-light text-gray-500">Max number of uploads: 5</Text>
 
         {/* Show list of uploaded documents when button is clicked */}
         {showDocuments && visibleDocuments.length > 0 && (

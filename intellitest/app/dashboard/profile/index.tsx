@@ -92,7 +92,7 @@ export default function Index() {
         alignItems: "center",
       }}
 
-      className = "p-4"
+      className = "p-4 pt-9"
     >
       <Text className="w-full text-start text-4xl pt-4">Profile</Text>
 

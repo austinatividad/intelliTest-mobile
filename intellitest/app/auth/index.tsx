@@ -73,7 +73,8 @@ export default function Index() {
       
       className="flex-col px-4"
     >
-        <Text nativeID="test" className="text-2xl font-bold text-center py-5">Let's get started!</Text>
+        <Text nativeID="test" className="text-2xl font-bold text-center">Welcome to intelli<Text className="text-2xl font-bold text-center py-5 text-green-400">Test</Text></Text>
+        <Text  className="text-xl text-center pb-5">We're thrilled to have you here.</Text>
   
         <Label nativeID="email" className="flex w-full justify-left text-left pb-2">Email</Label>
         

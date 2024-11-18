@@ -45,7 +45,7 @@ export default function Index() {
       }}
     >
       
-      <View className="w-full px-4 pt-5 mb-5">
+      <View className="w-full px-4 pt-12 mb-5 ">
           <Text className="text-3xl font-semibold mb-5">My Exams</Text>
           <InputWithIcon
               nativeID="search"

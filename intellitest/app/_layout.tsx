@@ -124,6 +124,7 @@ export default function RootLayout() {
               <Stack
                 screenOptions={{
                   headerTitleAlign: "center",
+                  headerShown: false,
                   headerTitle(props) {
                     return (
                       <Text className="text-3xl font-semibold">

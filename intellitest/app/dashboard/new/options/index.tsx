@@ -25,7 +25,7 @@ export default function Index() {
 
   return (
     <View style={{ flex: 1 }}>
-    <View className="p-4">
+    <View className="p-4 pt-9">
       <View>
         <Text className="text-3xl font-bold">Just a few more steps!</Text>
 

@@ -36,7 +36,6 @@ export async function signUp(email: string, password: string) {
 
 export async function getSession() {
     const { data, error } = await supabase.auth.getSession();
-
     return { data, error };
 }
 

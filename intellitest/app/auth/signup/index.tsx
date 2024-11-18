@@ -18,7 +18,7 @@ export default function Index() {
   const [passwordConfirm, setPasswordConfirm] = React.useState('');
 
   const { email: emailParam } = useLocalSearchParams() as { email: string | undefined };
-  
+
 
   React.useEffect(() => {
     if (emailParam) {
@@ -32,7 +32,7 @@ export default function Index() {
       return;
     }
 
-    signUp(email, password).then(({data, error}) => {
+    signUp(email, password).then(({ data, error }) => {
       if (error) {
         console.error(error.name);
         // You can put how to handle different errors here
@@ -40,7 +40,7 @@ export default function Index() {
         return;
       }
 
-      getSession().then(({data, error}) => {
+      getSession().then(({ data, error }) => {
         if (error) {
           console.error(error.name);
           // You can put how to handle different errors here
@@ -48,7 +48,7 @@ export default function Index() {
           return;
         }
         console.log(data);
-        router.navigate("/dashboard");
+        router.replace("/dashboard");
       });
       // router.navigate("/dashboard");
     });
@@ -62,33 +62,37 @@ export default function Index() {
         justifyContent: "center",
         // alignItems: "center",
       }}
-      
+
       className="flex-col px-4"
     >
-
+      {/* TODO: Add client-side validation */}
+      <Text className="text-4xl pb-5 font-bold">Sign Up</Text>
       <Text className="text-3xl pb-5">Welcome to intelli<Text className="text-3xl font-semibold text-green-400">Test</Text></Text>
 
+
       <Label nativeID="email" className="flex w-full justify-left text-left pb-2">Email</Label>
-        
-        <View className="pb-7">
-          <Input className="w-full" nativeID="email" onChangeText={(text) => setEmail(text)} value={email}/>
-        </View>
 
-        <Label nativeID="password" className="flex w-full justify-left text-left pb-2">Password</Label>
+      <View className="pb-7">
+        <Input className="w-full" nativeID="email" onChangeText={(text) => setEmail(text)} value={email} />
+      </View>
 
-        <View className="pb-7">
-          <Input className="w-full" nativeID="password" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password}/>
-        </View>
 
-        <Label nativeID="passwordConfirm" className="flex w-full justify-left text-left pb-2">Confirm Password</Label>
 
-        <View className="pb-7">
-          <Input className="w-full" nativeID="passwordConfirm" secureTextEntry={true} onChangeText={(text) => setPasswordConfirm(text)} value={passwordConfirm}/>
-        </View>
+      <Label nativeID="password" className="flex w-full justify-left text-left pb-2">Password</Label>
 
-        <Button onPress={handleAuth}>
-          <Text className="text-2xl">Sign Up</Text>
-        </Button>  
+      <View className="pb-7">
+        <Input className="w-full" nativeID="password" secureTextEntry={true} onChangeText={(text) => setPassword(text)} value={password} />
+      </View>
+
+      <Label nativeID="passwordConfirm" className="flex w-full justify-left text-left pb-2">Confirm Password</Label>
+
+      <View className="pb-7">
+        <Input className="w-full" nativeID="passwordConfirm" secureTextEntry={true} onChangeText={(text) => setPasswordConfirm(text)} value={passwordConfirm} />
+      </View>
+
+      <Button onPress={handleAuth}>
+        <Text className="text-2xl">Sign Up</Text>
+      </Button>
     </View>
   );
 }

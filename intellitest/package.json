@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "typegen": "npx supabase gen types typescript --project-id \"add project id here\" --schema public > lib/supabase/types.ts"
+    "typegen": "npx supabase gen types typescript --project-id \"add project id here\" --schema public > lib/supabase/types.ts",
+    "build-apk": "eas build -p android --profile preview"
   },
   "jest": {
     "preset": "jest-expo"

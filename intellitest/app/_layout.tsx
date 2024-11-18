@@ -98,7 +98,7 @@ export default function RootLayout() {
         setIsColorSchemeLoaded(true);
         return;
       }
-      const colorTheme = theme === "dark" ? "dark" : "light";
+      const colorTheme = theme === "dark" ? "light" : "light";
       await setAndroidNavigationBar(colorTheme);
       if (colorTheme !== colorScheme) {
         setColorScheme(colorTheme);
@@ -123,7 +123,6 @@ export default function RootLayout() {
             <GestureHandlerRootView style={{ flex: 1 }}>
               <Stack
                 screenOptions={{
-                  headerBackTitle: "Back",
                   headerTitleAlign: "center",
                   headerTitle(props) {
                     return (
@@ -132,11 +131,19 @@ export default function RootLayout() {
                       </Text>
                     );
                   },
-                  headerLeft: () => <></>,
+                  headerLeft: () => null,
                   headerRight: () => <></>,
                 }}
               >
                 <Stack.Screen name="index" />
+                <Stack.Screen
+                  name="dashboard/index"
+                  options={{
+                    gestureEnabled: false,
+                    headerShown: false,
+                  }}
+                />
+
               </Stack>
 
               {/* Footer */}

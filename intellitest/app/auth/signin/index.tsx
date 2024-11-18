@@ -36,7 +36,7 @@ export default function Index() {
         alert(error.message);
         return;
       }
-      router.navigate("/dashboard");
+      router.replace("/dashboard");
     });
   }
 

@@ -22,7 +22,7 @@ export default function Index() {
     async function checkSession() {
       const session = await getSession();
       if (session.data) {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
         setLoading(false); // Only stop loading if no session
       }
@@ -83,13 +83,13 @@ export default function Index() {
         </View>
         
         
-        <View style={{flexDirection: 'row', alignItems: 'center'}} className="w-full align-center pb-3">
+        {/* <View style={{flexDirection: 'row', alignItems: 'center'}} className="w-full align-center pb-3">
           <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
           <View>
             <Text style={{width: 50, textAlign: 'center'}}>OR</Text>
           </View>
           <View style={{flex: 1, height: 1, backgroundColor: 'black'}} />
-        </View>
+        </View> */}
 
         {/* <Button 
           onPress={handleGoogleAuth}>

@@ -7,17 +7,13 @@ import React from "react";
 import { NotebookText } from "lucide-react-native";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item"; // Import ExamItem component
 import { GenerateButton } from "@/components/IntelliTest/Buttons/generateButton"; // Import generateButton component
+import { getSession, getProfile } from "@/utils/auth";
 
 //openaiClient and promptList debug
 // TODO: Remove this code after testing.
 // import { promptList } from "@/utils/promptList";
 // import { generateOutput, testPromptWithReplacements } from "@/utils/openaiClient";
 
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-}
 
 interface Test {
   id: string;
@@ -31,12 +27,18 @@ interface UserData {
   recentScores: Test[];
 }
 
+type Profile = {
+  username: string;
+  profile_pic_path: string;
+  email: string;
+}
+
 // Dummy user
-const user: User = {
-  firstName: "Josh",
-  lastName: "Natividad",
-  email: "josh@gmail.com",
-};
+// const user: User = {
+//   firstName: "Josh",
+//   lastName: "Natividad",
+//   email: "josh@gmail.com",
+// };
 
 // Create dummy tests with unique ids
 const userTests: Test[] = [
@@ -60,13 +62,27 @@ const userData: UserData = {
 export default function Index() {
   const router = useRouter();
   const { setLoading, setText } = useLoadingContext();
-  const [firstName, setFirstName] = React.useState("");
+  const [profile, setProfile] = React.useState<Profile | null>(null);
 
+  //get the current session, print details
   React.useEffect(() => {
-    if (user.firstName) {
-      setFirstName(user.firstName);
+    async function checkSession() {
+      const session = await getSession();
+      if (!session.data) {
+        router.navigate("/");
+      } else {
+        // get the profile details
+        const profile = await getProfile(session.data.session?.user.email || '');
+        console.log(profile.data);
+        setProfile(profile.data);
+      }
     }
-  }, [user.firstName]);
+    checkSession();
+  }, [router]);
+
+  // const [firstName, setFirstName] = React.useState("");
+
+
 
 
   //debug - openaiClient and promptList
@@ -117,7 +133,7 @@ export default function Index() {
   return (
     <View style={{ flex: 1 }}>
       <View className="p-10 pt-36 text-center items-center">
-        <Text className="text-3xl font-bold">Hi, {firstName}! 👋</Text>
+        <Text className="text-3xl font-bold">Hi, {profile?.username}! 👋</Text>
         <Text className="text-2xl text-gray-600">Let's get ready for our next test!</Text>
       </View>
 

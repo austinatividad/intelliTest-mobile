@@ -59,3 +59,9 @@ export async function doesEmailExist(email: string): Promise<boolean | null> {
   
     return data;
   }
+
+
+export async function signOut() {
+    const { error } = await supabase.auth.signOut();
+    return { error };
+}

@@ -21,7 +21,7 @@ export default function Index() {
   React.useEffect(() => {
     async function checkSession() {
       const session = await getSession();
-      if (session.data) {
+      if (session.data.session != null) {
         router.replace("/dashboard");
       } else {
         setLoading(false); // Only stop loading if no session
@@ -31,6 +31,12 @@ export default function Index() {
   }, [router]);
   async function handleAuth() {
     // setLoading(true);
+
+    // check if input is not empty
+    if (email === "") {
+      alert("Please enter an email");
+      return;
+    }
 
     if (await doesEmailExist(email)) {
       router.push({

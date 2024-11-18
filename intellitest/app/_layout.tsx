@@ -135,7 +135,12 @@ export default function RootLayout() {
                   headerRight: () => <></>,
                 }}
               >
-                <Stack.Screen name="index" />
+                <Stack.Screen name="index"
+                  options={{
+                    gestureEnabled: false,
+                    headerShown: false,
+                  }}
+                />
                 <Stack.Screen
                   name="dashboard/index"
                   options={{

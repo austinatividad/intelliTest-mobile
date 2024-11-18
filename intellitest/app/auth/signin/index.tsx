@@ -9,12 +9,26 @@ import { useLocalSearchParams } from 'expo-router';
 import { Input } from "@/components/ui/input";
 import React from "react";
 import { signIn } from "@/utils/auth";
+import { getSession } from "@/utils/auth";
 
 export default function Index() {
   const router = useRouter();
+  const { setLoading, setText } = useLoadingContext();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  // Update the email state if the
+  
+  React.useEffect(() => {
+    async function checkSession() {
+      const session = await getSession();
+      if (session.data.session != null) {
+        console.log(session.data.session);
+        router.replace("/dashboard");
+      } else {
+        setLoading(false); // Only stop loading if no session
+      }
+    }
+    checkSession();
+  }, [router]);
 
   const { email: emailParam } = useLocalSearchParams() as { email: string | undefined };
   
@@ -40,7 +54,7 @@ export default function Index() {
     });
   }
 
-  const { setLoading, setText } = useLoadingContext();
+  
   return (
     <View
       style={{

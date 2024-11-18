@@ -7,7 +7,7 @@ import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
 import React from "react";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
-import { getSession } from "@/utils/auth";
+import { getSession, signOut } from "@/utils/auth";
 
 import {Loader2, Search} from "lucide-react-native";
 
@@ -74,10 +74,13 @@ export default function Index() {
     console.log("Log Out");
     //TODO: Add log out logic
       // Add your logic for the button action here (e.g., logging out)
+      
       setTimeout(() => {
         rotateAnim.stopAnimation();
         setIsDisabled(false); // Reset the button after action (for example, after a log out request)
-        router.navigate("/");
+        signOut();
+        router.replace("/");
+        
 
       }, 2000);  // Simulating a 2-second delay for demonstration
   };

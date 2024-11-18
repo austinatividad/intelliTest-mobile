@@ -12,13 +12,23 @@ import { getSession, doesEmailExist } from "@/utils/auth";
 // import { signInGoogle } from "@/utils/auth";
 // import { SignInGoogleButton } from "@/components/IntelliTest/Buttons/signInWithGoogleButton";
 
-export default async function Index() {
+export default function Index() {
   const router = useRouter();
-  const [email, setEmail] = React.useState('');  // Using state to store email input
-  const session = await getSession();
-  if (session.data) {
-    router.navigate("/dashboard");
-  }
+  const [email, setEmail] = React.useState(''); // State to store email input
+  const [loading, setLoading] = React.useState(true); // Manage loading state
+
+  // Check session on component mount
+  React.useEffect(() => {
+    async function checkSession() {
+      const session = await getSession();
+      if (session.data) {
+        router.push("/dashboard");
+      } else {
+        setLoading(false); // Only stop loading if no session
+      }
+    }
+    checkSession();
+  }, [router]);
   async function handleAuth() {
     // setLoading(true);
 

@@ -7,15 +7,17 @@ import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
 import React from "react";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
-import { getSession, signOut } from "@/utils/auth";
+import { getSession, signOut, getProfile } from "@/utils/auth";
 
 import {Loader2, Search} from "lucide-react-native";
 
 // Define the Session type
-type Session = {
+type Profile = {
+  username: string;
+  profile_pic_path: string;
   email: string;
-  created_at ?: string;
-};
+}
+
 
 import { dummy, ItemData } from "@/lib/dummy_data";
 
@@ -26,8 +28,7 @@ export default function Index() {
   // Create a reference to the animated value
   const rotateAnim = React.useRef(new Animated.Value(0)).current;
 
-  //store the session details in a state
-  const [session, setSession] = React.useState<Session | null>(null);
+  const [profile, setProfile] = React.useState<Profile | null>(null);
 
   // get the current session, print details
   React.useEffect(() => {
@@ -36,12 +37,15 @@ export default function Index() {
       if (!session.data) {
         router.navigate("/");
       } else {
-        setSession({
-          email: session.data.session?.user.email || '',
-          created_at: String(session.data.session?.user.created_at) || ''
-        });
-        console.log(session.data.session?.user.email);
-        console.log(session.data.session?.user.created_at);
+        // get the profile details
+        const profile = await getProfile(session.data.session?.user.email || '');
+        setProfile(profile.data);
+
+        console.log(profile.data);
+
+
+
+
       }
     }
     checkSession();
@@ -94,30 +98,46 @@ export default function Index() {
 
       className = "p-4 pt-9"
     >
+      
       <Text className="w-full text-start text-4xl pt-4">Profile</Text>
-
-      <View style={{ height: 20 }} />
-
-      <View className="flex-row items-center justify-between border-2 border-black rounded-lg p-2 w-full mb-4">
-        <Text className="text-lg font-semibold">Email</Text>
-        <Text className="text-lg">{session?.email}</Text>
-      </View>
-      <View className="flex-row items-center justify-between border-2 border-black rounded-lg p-2 w-full">
-        <Text className="text-lg font-semibold">Account Creation Date</Text>
-        <Text className="text-lg">{session?.created_at ? session.created_at.split("T")[0] : ''}</Text>
-      </View>
-
-
-      <View className="border-black border-2 rounded-lg w-36 absolute bottom-5 right-5 ">
+      <View className="border-black border-2 rounded-lg w-36 absolute top-12 right-3 ">
         <Button className="bg-gray-300 w-full h-full flex flex-row" size={'default'} disabled={isDisabled} onPress={onLogOut}>
-          {isDisabled && 
+          {isDisabled ? (
             <Animated.View style={{ transform: [{ rotate }] }}>
               <Loader2 size={24} color={"black"} />
             </Animated.View>
-          }
-          <Text className="text-black ">Log Out</Text>
-        </Button> 
+          ) : (
+            <Text className="text-black">Log Out</Text>
+          )}
+        </Button>
       </View>
+      
+
+      <View style={{ height: 20 }} />
+
+      <View className="flex-col items-center  p-2 w-full mb-4">
+        
+        <Image
+          source={{ uri: "https://efhtpznenarzvbqbltuz.supabase.co/storage/v1/object/public/profile/" + profile?.profile_pic_path }}
+          style={{ width: 200, height: 200, borderRadius: 200 }}
+        />
+        <Text className="text-lg font-semibold mt-2">Profile Picture</Text>
+      </View>
+
+
+      <View className="flex-row items-center justify-between border-2 border-black rounded-lg p-2 w-full mb-4">
+        <Text className="text-lg font-semibold">Email</Text>
+        <Text className="text-lg">{profile?.email}</Text>
+      </View>
+
+      <View className="flex-row items-center justify-between border-2 border-black rounded-lg p-2 w-full mb-4">
+        <Text className="text-lg font-semibold">Username</Text>
+        <Text className="text-lg">{profile?.username}</Text>
+      </View>
+
+      
+
+      
     </View>
   );
 }

@@ -1,4 +1,5 @@
 node_modules/
+intellitest/android
 .expo/
 dist/
 npm-debug.*

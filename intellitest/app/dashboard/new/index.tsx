@@ -3,6 +3,7 @@ import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "expo-router";
 import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { DocumentItem } from "@/components/IntelliTest/Dashboard/document-item"; // Import ExamItem
@@ -60,7 +61,25 @@ export default function Index() {
     });
   };
 
-  
+  const mapResults = (results: DocumentPicker.DocumentPickerResult | ImagePicker.ImagePickerResult ) => {
+    if (results.canceled) {
+      return;
+    }
+    
+    results.assets.map((asset: DocumentPicker.DocumentPickerAsset | ImagePicker.ImagePickerAsset) => {
+      const fileName = "name" in asset ? asset.name : asset.fileName ? asset.fileName : null
+
+      const newDocument: Document = {
+        id: Date.now().toString(),
+        fileName: fileName || "No file name provided",
+        fileType: determineFileType(fileName), // Implement this function based on your fileTypes enum
+        uri: asset.uri,
+        isRemoved: false,
+      };
+      setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
+      setShowDocuments(true);
+    });
+  }
   const handleDocumentSelection = async () => {
     // alert that the user can only upload 5 documents
     if (documents.length >= 5) {
@@ -77,22 +96,41 @@ export default function Index() {
         console.log('Document selection canceled');
       } else {
         console.log(result);
-        result.assets.map((asset) => {
-          const newDocument: Document = {
-            id: Date.now().toString(),
-            fileName: asset.name,
-            fileType: determineFileType(asset.name), // Implement this function based on your fileTypes enum
-            uri: asset.uri,
-            isRemoved: false,
-          };
-          setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
-          setShowDocuments(true);
-        });
+        mapResults(result);
       }
     } catch (error) {
       console.error('Error selecting document:', error);
     }
   };
+
+  const handleCamera = async () => {
+    try {
+
+      if (documents.length >= 5) {
+        alert("You can only upload 5 documents. Remove a document to upload a new one.");
+        return;
+      }
+
+      await ImagePicker.getCameraPermissionsAsync();
+      let result = await ImagePicker.launchCameraAsync({
+        cameraType: ImagePicker.CameraType.back,
+        allowsEditing: true,
+        quality: 1,
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+
+      });
+  
+      if (result.canceled) {
+        console.log("Image Selection Cancelled");
+        return;
+      }
+
+      mapResults(result);
+
+    } catch (error) {
+      console.error('Error selecting document:', error);
+    }
+  }
 
   // Filter out removed documents
   const visibleDocuments = documents.filter(doc => !doc.isRemoved);
@@ -119,6 +157,10 @@ export default function Index() {
         {/* Upload Documents Button */}
         <Button variant="secondary" className="w-1/2" onPress={handleDocumentSelection}>
           <Text>Upload Documents</Text>
+        </Button>
+
+        <Button variant="secondary" className="w-1/2 my-0.5" onPress={handleCamera}>
+          <Text>Camera</Text>
         </Button>
         <Text className="font-light text-gray-500">Max number of uploads: 5</Text>
 
@@ -176,7 +218,8 @@ export default function Index() {
     </View>
   );
 }
-function determineFileType(name: string): fileTypes {
+function determineFileType(name: string | null): fileTypes {
+  if (!name) throw new Error(`Unknown File Type for file: ${name}.`)
   const extension = name.split('.').pop()?.toLowerCase();
   switch (extension) {
     case 'txt':

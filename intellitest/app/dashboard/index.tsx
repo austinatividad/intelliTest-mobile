@@ -12,7 +12,7 @@ import { getSession, getProfile } from "@/utils/auth";
 //openaiClient and promptList debug
 // TODO: Remove this code after testing.
 // import { promptList } from "@/utils/promptList";
-// import { generateOutput, testPromptWithReplacements } from "@/utils/openaiClient";
+// import { generateOutput, testPromptWithReplacements, imageTestPrompt, generateOutputWithReplacements } from "@/utils/openaiClient";
 
 
 interface Test {
@@ -82,20 +82,18 @@ export default function Index() {
 
   // const [firstName, setFirstName] = React.useState("");
 
-
-
-
   //debug - openaiClient and promptList
   // TODO: Remove this code after testing.
   // React.useEffect(() => {
   //   console.log("is this working?")
   //   async function testOpenaiClient() {
-  //     const prompt = 'testPrompt'
-  //     const response = await testPromptWithReplacements({name: "Josh", profession: "Software Engineer"});
+  //     const response = await generateOutputWithReplacements("evaluateNotes", { notes:  pythonSyntaxExamples });
   //     console.log(response);
   //   }
   //   testOpenaiClient();
   // }, []);
+
+
 
 
   const handleExamPress = (id: string) => {

@@ -1,7 +1,6 @@
 import OpenAI from 'openai';
 import { getPrompt } from  './promptList';
 
-
 const openai = new OpenAI({
     apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '', // Ensure your API key is stored securely
   });
@@ -25,10 +24,38 @@ export async function generateOutput(prompt: string) {
     return completion.choices[0].message.content;
 }
 
+export async function generateOutputWithReplacements(promptName: string, replacements: Record<string, string>) {
+    return await generateOutput(getPrompt(promptName, replacements));
+}
+
 export async function testPrompt() {
     return await generateOutput('Your name is John and you are a lawyer.');
 }
 
 export async function testPromptWithReplacements(replacements: Record<string, string>) {
     return await generateOutput(getPrompt('testPrompt', replacements));
+}
+
+
+// function for gpt vision
+export async function imageTestPrompt() {
+    const response = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [
+            {
+                role: 'user',
+                content: [
+                    {type: "text", text: getPrompt('imageTestPrompt', {})},
+                    {
+                        type: "image_url",
+                        image_url: {
+                          "url": "https://study.com/cimages/multimages/16/power1648407513620484813.png",
+                        },
+                    }
+                ]
+            }
+        ]
+    })
+
+    return response.choices[0].message.content;
 }

@@ -6,6 +6,11 @@ enum QuestionType {
     ESSAY = "essay"
 }
 
+enum ExamStatus {
+    NOT_YET_ANSWERED = "Not Yet Answered",
+    COMPLETED = "Completed"
+}
+
 //abstract class for questions
 interface AQuestion {
     question: string;
@@ -61,8 +66,10 @@ const dummy = [
     {
         //complete version
         id: "10",
+        user: "Josh Natividad",
         examName: "MOBDEVE - Recycler Views and Intents",
-        examStatus: "Completed",
+        examStatus: ExamStatus.COMPLETED,
+        created_at: "2021-10-10",
         attemptCount: 3,
         examDescription: "This is an intelliTest for MOBDEVE! I should know what these are by now.",
         examParts: [

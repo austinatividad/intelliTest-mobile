@@ -52,7 +52,6 @@ export default function Index() {
   );
 
   function handlePress(id: string) {
-    console.log(id);
     router.push({
       pathname: "/dashboard/exam",
       params: { examId: id },
@@ -67,7 +66,8 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <View className="w-full px-4 pt-12 mb-5 ">
+      
+      <View className="w-full px-4 pt-9 mb-5  ">
         <Text className="text-3xl font-semibold mb-5">My Exams</Text>
         <InputWithIcon
           nativeID="search"

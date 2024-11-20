@@ -23,7 +23,7 @@ import { dummy, ItemData } from "@/lib/dummy_data";
 
 export default function Index() {
   const router = useRouter();
-
+  const { setLoading } = useLoadingContext();
   const [isDisabled, setIsDisabled] = React.useState(false);
   // Create a reference to the animated value
   const rotateAnim = React.useRef(new Animated.Value(0)).current;
@@ -33,6 +33,7 @@ export default function Index() {
   // get the current session, print details
   React.useEffect(() => {
     async function checkSession() {
+      setLoading(true); 
       const session = await getSession();
       if (!session.data) {
         router.navigate("/");
@@ -41,6 +42,7 @@ export default function Index() {
         const profile = await getProfile(session.data.session?.user.email || '');
         setProfile(profile.data);
         console.log(profile.data);
+        setLoading(false);
       }
     }
     checkSession();
@@ -94,8 +96,8 @@ export default function Index() {
       className = "p-4 pt-9"
     >
       
-      <Text className="w-full text-start text-4xl pt-4">Profile</Text>
-      <View className="border-black border-2 rounded-lg w-36 absolute top-12 right-3 ">
+      <Text className="text-3xl font-semibold mb-5 w-full text-start">My Profile</Text>
+      <View className=" rounded-lg w-36 absolute bottom-12 right-3 ">
         <Button className="bg-gray-300 w-full h-full flex flex-row" size={'default'} disabled={isDisabled} onPress={onLogOut}>
           {isDisabled ? (
             <Animated.View style={{ transform: [{ rotate }] }}>
@@ -116,19 +118,23 @@ export default function Index() {
           source={{ uri: "https://efhtpznenarzvbqbltuz.supabase.co/storage/v1/object/public/profile/" + profile?.profile_pic_path }}
           style={{ width: 200, height: 200, borderRadius: 200 }}
         />
-        <Text className="text-lg font-semibold mt-2">Profile Picture</Text>
       </View>
 
-
-      <View className="flex-row items-center justify-between border-2 border-black rounded-lg p-2 w-full mb-4">
-        <Text className="text-lg font-semibold">Email</Text>
-        <Text className="text-lg">{profile?.email}</Text>
-      </View>
-
-      <View className="flex-row items-center justify-between border-2 border-black rounded-lg p-2 w-full mb-4">
+      {profile ? (
+        <>
+          <View className="flex-row items-center justify-between rounded-lg border-b border-gray-300 p-2 w-full mb-4">
         <Text className="text-lg font-semibold">Username</Text>
-        <Text className="text-lg">{profile?.username}</Text>
-      </View>
+        <Text className="text-lg">{profile.username}</Text>
+          </View>
+
+          <View className="flex-row items-center justify-between rounded-lg p-2 w-full border-b border-gray-300 mb-4">
+        <Text className="text-lg font-semibold">Email</Text>
+        <Text className="text-lg">{profile.email}</Text>
+          </View>
+        </>
+      ) : null}
+
+      
 
       
 

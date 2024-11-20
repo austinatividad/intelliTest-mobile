@@ -7,23 +7,37 @@ import { useRouter } from "expo-router";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
 import React from "react";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
-
+import * as sq from "@/utils/supabaseQueries";
 import {Search} from "lucide-react-native";
-
 import { dummy, ItemData } from "@/lib/dummy_data";
+
+
 export default function Index() {
   const router = useRouter();
 
   const { setLoading, setText } = useLoadingContext();
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState<string>();
+  const [exams, setExams] = React.useState<sq.Exam[] | null>(null);
 
-  const renderItem = ({ item }: {item: ItemData}) => {
+
+  React.useEffect(() => {
+    async function getExams() {
+      setLoading(true);
+      const exams = await sq.getExams();
+      setExams(exams ?? []);
+      setLoading(false);
+      console.log(exams);
+    }
+    getExams();
+  }, [router]);
+
+  const renderItem = ({ item }: {item: sq.Exam}) => {
     return (
         <View
           style={{ alignItems: 'center'}}
           className="w-full">
-            <ExamItem examName={item.examName} examStatus={item.examStatus} id={item.id} onPress={handlePress}/>
+            <ExamItem examName={item.examName} examStatus={item.examStatus} id={item.id} score={item.score} totalScore={item.totalScore} onPress={handlePress}/>
         </View>
     )
   }
@@ -58,7 +72,8 @@ export default function Index() {
       </View>
       {/* Dummy Data */}
       <FlatList
-        data={ dummy }
+      //TODO: change to actual data
+        data={ exams }
         renderItem={ renderItem }
         className="w-full px-4"
         keyExtractor={item => item.id}

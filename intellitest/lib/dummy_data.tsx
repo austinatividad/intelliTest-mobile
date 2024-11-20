@@ -161,12 +161,54 @@ const dummy = [
         examName: "MOBDEVE - Android Development (Dummy Data)",
         examStatus: "70/70 - Attempt 1"
     },
+    {
+        id: "3",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    {
+        id: "4",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    {
+        id: "5",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    {
+        id: "6",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    {
+        id: "7",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    {
+        id: "8",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    {
+        id: "9",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
+    {
+        id: "101",
+        examName: "MOBDEVE - Android Development (Dummy Data)",
+        examStatus: "70/70 - Attempt 1"
+    },
     
 ];
 
 
 
 type ItemData = {
+    score: number;
+    totalScore: number;
     id: string;
     examName: string;
     examStatus: string;

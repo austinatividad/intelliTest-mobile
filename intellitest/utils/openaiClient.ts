@@ -49,7 +49,7 @@ export async function imageTestPrompt() {
                     {
                         type: "image_url",
                         image_url: {
-                          "url": "https://study.com/cimages/multimages/16/power1648407513620484813.png",
+                          "url": "file:///data/user/0/host.exp.exponent/cache/DocumentPicker/4b148223-8357-4ceb-8068-89054eae71e6.png",
                         },
                     }
                 ]

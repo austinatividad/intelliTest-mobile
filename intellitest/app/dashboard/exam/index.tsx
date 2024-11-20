@@ -65,10 +65,13 @@ export default function Index() {
         <Text className="text-2xl font-semibold mb-4">{exam?.status}</Text>
 
         {/* Exam Parts */}
-        <Text className="text-3xl font-bold">Parts</Text>
-
+        {exam && (
+          <>
+            <Text className="text-3xl font-bold">Parts</Text>
+            <Text className="text-xl font-semi-bold text-gray-500 mb-4">This test has {exam?.part?.length ?? 0} parts:</Text>
+          </>
+        )}
         
-        <Text className="text-xl font-semi-bold text-gray-500 mb-4">This test has {exam?.part?.length ?? 0} parts:</Text>
         {/* map examParts, list */}
         {exam?.part?.map((part, index) => {
           return (

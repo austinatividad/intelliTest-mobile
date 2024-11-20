@@ -130,19 +130,18 @@ export default function Index() {
 
   return (
     <View style={{ flex: 1 }}>
-      <View className="p-10 pt-36 text-center items-center">
-        <Text className="text-3xl font-bold">Hi, {profile?.username}! 👋</Text>
-        <Text className="text-2xl text-gray-600">Let's get ready for our next test!</Text>
+      <View className="px-10 pt-36 text-center items-center bg-green-400 mb-20">
+        <Text className="text-3xl font-bold text-white">Hi, {profile?.username}! 👋</Text>
+        <Text className="text-2xl text-white">Let's get ready for our next test!</Text>
+        <View style={{ transform: [{ translateY: 50 }] }}>
+          <GenerateButton />  
+        </View>
+        
       </View>
 
-      <View style={{ flexDirection: "row", alignItems: "center" }} className="w-full align-center pb-3">
-        <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
-        <GenerateButton />
-        <View style={{ flex: 1, height: 1, backgroundColor: "black" }} />
-      </View>
 
       <SectionList
-        className="w-full p-4"
+        className="w-full p-4 "
         sections={sections}
         keyExtractor={(item, index) => item.id + index}
         renderSectionHeader={({ section }) => (

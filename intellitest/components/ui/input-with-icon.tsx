@@ -16,6 +16,7 @@ const InputWithIcon: React.FC<InputWithIconProps> = ({ icon, ...props }) => {
         borderWidth: 1, // Optional: if you want to add a border to the container
         borderRadius: 8, // Optional: rounded corners
         paddingHorizontal: 10, // Space between the border and the content
+        paddingVertical: 2,
       }}
     >
       {/* Icon placed on the left */}

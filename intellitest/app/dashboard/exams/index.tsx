@@ -2,6 +2,7 @@ import { View, FlatList } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
+import { GenerateButton } from "@/components/IntelliTest/Buttons/generateButton";
 import * as sq from "@/utils/supabaseQueries";
 import { Search } from "lucide-react-native";
 import React from "react";
@@ -85,6 +86,15 @@ export default function Index() {
         keyExtractor={(item) => item.id}
         extraData={selectedId}
       />
+    {exams && exams.length === 0 && (
+      
+      <View className="px-4 h-full align-middle items-center">
+        <View className="p-4">
+        <Text className="text-2xl text-gray-500 text-center">You haven't made a mock test, yet!</Text>
+        </View>
+        <GenerateButton />
+      </View>
+    )}
     </View>
   );
 }

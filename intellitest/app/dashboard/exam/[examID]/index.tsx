@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import RubricModal from "@/components/ui/rubricModal";
 import React, { useState, useCallback } from "react";
+import * as sq from "@/utils/supabaseQueries";
+
 
 export default function QuestionPage() {
     const router = useRouter();
@@ -16,6 +18,17 @@ export default function QuestionPage() {
     const currentQuestionIndex = Number(questionNumber) - 1; // Zero-based index
     const [showRubric, setShowRubric] = useState(false);
     const [rubricText, setRubricText] = useState("");
+    const [exam, setExam] = useState<sq.Exam | null>(null);
+
+    // useEffect(() => {
+    //     async function getExam() {
+    //         console.log(examID)
+    //         const exam = await sq.getExam(examID);
+    //         setExam(exam);
+    //     }
+    //     getExam();
+    // }, [examID]);
+
 
     // Redirect to /summary if questionNumber exceeds the number of questions
     useEffect(() => {

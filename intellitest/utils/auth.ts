@@ -39,6 +39,7 @@ async function convertImageToBase64(imageUri: string) {
       return null;
     }
   }
+
 export async function signUp(email: string, password: string, username: string, profile_pic_path: string) {
     //convert profile_pic to base64
     console.log(profile_pic_path);

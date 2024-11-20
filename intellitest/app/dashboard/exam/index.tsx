@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Image } from "lucide-react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
-import React from "react";
+import React, { useEffect } from "react";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
 
 import {Search} from "lucide-react-native";
 
 import { dummy, ItemData } from "@/lib/dummy_data";
+import * as sq from "@/utils/supabaseQueries";
 
 
 export default function Index() {
@@ -19,15 +20,30 @@ export default function Index() {
   const { setLoading, setText } = useLoadingContext();
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState<string>();
+  const [exam, setExam] = React.useState<sq.Exam | null>(null);
+  const examIdParam = useLocalSearchParams()["examId"];
+  const examId = Array.isArray(examIdParam) ? examIdParam[0] : examIdParam;
 
-  const { examId }  = useLocalSearchParams();
+  useEffect(() => {
+    async function getExam() {
+      setLoading(true);
+      const exam = await sq.getExam(examId);
+      //throw error if exam is null
+      if (!exam) {
+        setText("Exam not found");
+        setLoading(false);
+        return;
+      }
+      setExam(exam);
+      setLoading(false);
+      console.log(exam)
+    }
+    getExam();
+  }, [router]);
 
-  const exam = dummy.find((item) => item.id == examId)
-  if (exam == undefined)
-  {
-    //TODO: redirect to 404
-    //? Probably not needed for a mobile app
-  }
+
+
+  
 
   const handlePress = () => {
     console.log("Pressed")
@@ -43,34 +59,36 @@ export default function Index() {
         flex: 1,
       }}
     >
-      <View className="p-4">
-        <Text className="text-3xl font-bold">{exam?.examName}</Text>
-        <Text className="text-xl font-semi-bold text-gray-500 mb-4">{exam?.examDescription}</Text>
-        <Text className="text-2xl font-semibold mb-4">{exam?.examStatus}</Text>
+      <View className="p-4 pt-9">
+        <Text className="text-3xl font-bold">{exam?.exam_name}</Text>
+        <Text className="text-xl font-semi-bold text-gray-500 mb-4">{exam?.exam_description}</Text>
+        <Text className="text-2xl font-semibold mb-4">{exam?.status}</Text>
 
         {/* Exam Parts */}
         <Text className="text-3xl font-bold">Parts</Text>
 
         
-        <Text className="text-xl font-semi-bold text-gray-500 mb-4">This test has {exam?.examParts?.length ?? 0} parts:</Text>
+        <Text className="text-xl font-semi-bold text-gray-500 mb-4">This test has {exam?.part?.length ?? 0} parts:</Text>
         {/* map examParts, list */}
-        {exam?.examParts?.map((part, index) => {
+        {exam?.part?.map((part, index) => {
           return (
             <View key={index} className="mb-4 pl-8">
-              <Text className="text-2xl font-semibold">{part.partName}</Text>
-              <Text className="text-xl font-semibold text-gray-500">{part.partDescription}</Text>
+              <Text className="text-2xl font-semibold">{part.part_name}</Text>
+              <Text className="text-xl font-semibold text-gray-500">{part.part_description}</Text>
             </View>
           )
         } )}
 
-        <View className="rounded bg-gray-100 p-4 ">
-          {/* My Score */}
-          <Text className="text-3xl font-bold">My Score</Text>
-          {/* Attempt # */}
-          <Text className="text-xl font-semi-bold text-gray-500 mb-4">Attempt {exam?.attemptCount}</Text>
-          {/* Score */}
-          <Text className="text-xl text-center font-semi-bold text-gray-500 mb-4">You scored {exam?.examScore ?? 0} out of {exam?.examTotalScore ?? 0} points</Text>
-        </View>
+        {exam?.status === "Completed" && (
+          <View className="rounded bg-gray-100 p-4 ">
+            {/* My Score */}
+            <Text className="text-xl font-bold">My Latest Score</Text>
+            {/* Attempt # */}
+            <Text className="text-xl font-semi-bold text-gray-500 mb-4">Attempt {exam?.attempt_count}</Text>
+            {/* Score */}
+            <Text className="text-xl text-center font-semi-bold text-gray-500 mb-4">You scored {exam?.score ?? 0} out of {exam?.total_score ?? 0} points</Text>
+          </View>
+        )}
          
       </View>
 

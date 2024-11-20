@@ -74,7 +74,7 @@ export async function signUp(email: string, password: string, username: string, 
     const { data: data2, error: error2 } = await supabase
         .from('profile')
         .insert([
-            { id, email, username, profile_pic_path: `public/${email}.png` }
+            { id, email, username, profile_pic_path: `public/${email}.${imageExtension}` }
         ]);
     if (error2) {
         console.error('Error inserting into profile table:', error2.message);

@@ -50,6 +50,12 @@ export interface MultipleChoiceOption {
     is_correct: boolean; // Indicates if this option is correct
 }
 
+export interface Identification {
+    id: string; // Unique identifier for the identification question
+    question_id: string; // Foreign key referencing the question ID
+    answer: string; // The correct answer for the identification question
+}
+
 export interface Rubric {
     id: string; // Unique identifier for the rubric
     question_id: string; // Foreign key referencing the question ID

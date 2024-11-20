@@ -29,6 +29,9 @@ export async function signInGoogle() {
 
 
 export async function signUp(email: string, password: string, username: string, profile_pic_path: string) {
+    // lowercase email
+    email = email.toLowerCase();
+    
     //convert profile_pic to base64
     console.log(profile_pic_path);
 

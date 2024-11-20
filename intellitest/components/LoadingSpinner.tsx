@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     bottom: -30,
     position: "absolute",
     fontSize: 16,
-    fontFamily: "SeriousMD",
   },
 });
 

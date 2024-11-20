@@ -8,26 +8,8 @@ import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { DocumentItem } from "@/components/IntelliTest/Dashboard/document-item"; // Import ExamItem
 import { X } from "lucide-react-native";
+import { Document, ExamInputContent, fileTypes } from "@/utils/types";
 
-enum fileTypes {
-  'text',
-  'image',
-  // Add other file types as needed
-}
-
-interface Document {
-  id: string;
-  fileName: string;
-  fileType: fileTypes;
-  uri: string;
-  isRemoved: boolean;
-}
-
-// the interface for the exam input content, will be used to store the content of the exam input and pass it to the next page
-interface ExamInputContent {
-  inputText: string;
-  documents: Document[];
-}
 
 export default function Index() {
   const router = useRouter();
@@ -68,13 +50,14 @@ export default function Index() {
     
     results.assets.map((asset: DocumentPicker.DocumentPickerAsset | ImagePicker.ImagePickerAsset) => {
       const fileName = "name" in asset ? asset.name : asset.fileName ? asset.fileName : null
-
+      
       const newDocument: Document = {
         id: Date.now().toString(),
         fileName: fileName || "No file name provided",
         fileType: determineFileType(fileName), // Implement this function based on your fileTypes enum
         uri: asset.uri,
         isRemoved: false,
+        base64: "base64" in asset ? asset.base64 : null,
       };
       setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
       setShowDocuments(true);
@@ -111,20 +94,26 @@ export default function Index() {
         return;
       }
 
-      await ImagePicker.getCameraPermissionsAsync();
+      const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+      const mediaLibraryPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+    
+      if (!cameraPermission.granted || !mediaLibraryPermission.granted) {
+        alert('Camera and Media Library permissions are required.');
+        return false;
+      }
       let result = await ImagePicker.launchCameraAsync({
         cameraType: ImagePicker.CameraType.back,
         allowsEditing: true,
         quality: 1,
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-
+        base64: true
       });
   
       if (result.canceled) {
         console.log("Image Selection Cancelled");
         return;
       }
-
+      console.log(result);
       mapResults(result);
 
     } catch (error) {

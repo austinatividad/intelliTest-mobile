@@ -1,6 +1,10 @@
 import { supabase } from "@/lib/supabase";
 import * as auth from "@/utils/auth";
-
+import { err } from "react-native-svg";
+import * as Crypto from 'expo-crypto';
+import { Document } from "./types";
+import { decode } from 'base64-arraybuffer'
+import { convertImageToBase64 } from "./imageUtil";
 
 // exam details without the questions
 export interface ExamListItem {
@@ -141,3 +145,49 @@ export async function getExam(examId: string) {
     const res = data[0];
     return res;
 }
+
+export async function createBucket() {
+    const uuid = await generateUUID();
+
+    const {data, error} = await supabase.storage.createBucket(uuid, {
+        public: true,
+        allowedMimeTypes: ["image/*"]
+    })
+
+    if (error) throw error;
+    console.info(`Bucket Created: ${data.name}`)
+    return data
+}
+
+export async function uploadImagesToBucket(bucket: string, images: Document[]) {
+
+    await Promise.all(images.map(async (image) => {
+        console.info(`Uploading Image: ${image.fileName}`)
+        const base64str = "base64" in image ? image.base64 : await convertImageToBase64(image.uri);
+        const imageExtension = image.fileName.split('.').pop();
+        console.log(imageExtension)
+        if (!base64str) return;
+
+        const res =  decode(base64str || '');
+        const {data, error} = await supabase.storage.from(bucket).upload(`${image.fileName}`, res, {
+            contentType: `image/${imageExtension}`
+        });
+
+        if (error) {
+            console.error(`Error Uploading Image: ${image.fileName}`)
+        }
+    }))
+}
+
+const generateUUID = async (): Promise<string> => {
+    const randomBytes = await Crypto.getRandomBytesAsync(16);
+    return [...randomBytes]
+      .map((byte, index) => {
+        const value = byte.toString(16).padStart(2, '0');
+        if (index === 6) return (parseInt(value, 16) & 0x0f | 0x40).toString(16); // Set version to 4
+        if (index === 8) return (parseInt(value, 16) & 0x3f | 0x80).toString(16); // Set variant
+        return value;
+      })
+      .join('')
+      .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5'); // Format as UUID
+  };

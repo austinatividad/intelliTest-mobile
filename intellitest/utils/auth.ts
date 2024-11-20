@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import * as AuthSession from 'expo-auth-session';
 import { decode } from 'base64-arraybuffer';
-import * as FileSystem from 'expo-file-system';
+import { convertImageToBase64 } from "./imageUtil";
 
 export async function signInGoogle() {
     try {
@@ -27,18 +27,6 @@ export async function signInGoogle() {
     }
 }
 
-async function convertImageToBase64(imageUri: string) {
-    try {
-      // Read the file at the given URI
-      const base64String = await FileSystem.readAsStringAsync(imageUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      return base64String;
-    } catch (error) {
-      console.error('Error reading file:', error);
-      return null;
-    }
-  }
 
 export async function signUp(email: string, password: string, username: string, profile_pic_path: string) {
     //convert profile_pic to base64

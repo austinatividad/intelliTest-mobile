@@ -1,27 +1,68 @@
 import { View, Text } from "react-native";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Document, ExamInputContent, fileTypes } from "@/utils/types";
+import { supabase } from "@/lib/supabase";
+import { createBucket, uploadImagesToBucket } from "@/utils/supabaseQueries";
 
 export default function Index() {
   const router = useRouter();
   const { setLoading, setText } = useLoadingContext();
   const [examName, setExamName] = useState(""); // State to track exam name input
+  const [bucketName, setBucketName] = useState("");
+  const [shouldContinue, setShouldContinue] = useState(false);
+  const examInputContent : ExamInputContent = JSON.parse(useLocalSearchParams<{ examInputContent: string }>().examInputContent); // Get the exam input content from the URL
 
   // Check if the Continue button should be visible
   const isButtonVisible = examName.trim().length > 0;
 
+  const imageDocuments = examInputContent.documents.filter(document => document.fileType === fileTypes.image);
+  const textDocuments = examInputContent.documents.filter(document => document.fileType === fileTypes.text);
+
+  const createSupabaseBucket = async () => {
+    try {
+      const data = await createBucket();
+      setBucketName(data.name);
+    } catch (error) {
+      console.error(`Bucket Creation Failed: ${error}`)
+    } 
+  };
+
   const handleContinue = () => {
     // Add logic to handle the continue button press (e.g., navigation)
-    router.push({
-        pathname: "/dashboard/exam",
-        params: { examId: "10" },
-    });
+
+    setLoading(true);
+    setShouldContinue(true);
+
+
+    // router.push({
+    //     pathname: "/dashboard/exam",
+    //     params: { examId: "10" },
+    // });
   };
+
+  useEffect(() => {
+    if (imageDocuments.length > 0 && shouldContinue) {
+      setText("Creating Bucket...");
+      createSupabaseBucket();
+    }
+
+  }, [shouldContinue]);
+
+  useEffect(() => {
+    if (bucketName != "") {
+      setText("Uploading Imagees...")
+      uploadImagesToBucket(bucketName, imageDocuments)
+      setText("Upload Images done!");
+    }
+
+  }, [bucketName]);
+
 
   return (
     <View style={{ flex: 1 }}>

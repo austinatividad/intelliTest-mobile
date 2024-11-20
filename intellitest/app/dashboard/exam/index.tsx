@@ -41,10 +41,6 @@ export default function Index() {
     getExam();
   }, [router]);
 
-
-
-  
-
   const handlePress = () => {
     console.log("Pressed")
     router.navigate({

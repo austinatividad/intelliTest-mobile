@@ -1,28 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 interface MultipleChoiceItemProps {
     text: string;
-    isCorrect: boolean; // Whether this item is the correct answer
+    isSelected: boolean; // Whether this item is selected
+    onSelect: () => void; // Handler for when this item is selected
 }
 
-export const MultipleChoiceItem: React.FC<MultipleChoiceItemProps> = ({ text, isCorrect }) => {
-    const [selected, setSelected] = useState<boolean | null>(null); // State to track selection
-
-    // Function to handle selection
-    const handleSelect = () => {
-        setSelected(true);
-    };
-
+export const MultipleChoiceItem: React.FC<MultipleChoiceItemProps> = ({ text, isSelected, onSelect }) => {
     return (
-        <TouchableOpacity 
+        <TouchableOpacity
             style={[
-                styles.container, 
-                styles.default
-            ]} 
-            onPress={handleSelect}
+                styles.container,
+                isSelected ? styles.selected : styles.default, // Apply selected style if true
+            ]}
+            onPress={onSelect}
         >
-            <Text style={styles.text}>{text}</Text>
+            <Text style={[styles.text, isSelected && styles.selectedText]}>{text}</Text>
+
+            {/* text that says "Selected" on the right side if isSelected */}
+            {isSelected && <Text style={styles.selectedText}>Selected</Text>}
         </TouchableOpacity>
     );
 };
@@ -36,9 +33,18 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     default: {
-        borderColor: 'gray', // Default black border
+        borderColor: 'gray', // Default border color
+        backgroundColor: 'white',
+    },
+    selected: {
+        borderColor: '#808080', // Neutral border color
+        backgroundColor: '#F0F0F0', // Neutral background color
     },
     text: {
         fontSize: 16,
+    },
+    selectedText: {
+        fontWeight: 'bold',
+        color: '#808080',
     },
 });

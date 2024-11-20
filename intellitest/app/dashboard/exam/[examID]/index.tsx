@@ -1,3 +1,4 @@
+// exam.tsx
 import { useEffect } from "react";
 import { View, Text } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -14,6 +15,12 @@ import * as sq from "@/utils/supabaseQueries";
 import { set } from "date-fns";
 
 
+interface answer {
+    question_id: string;
+    answer: string;
+}
+
+
 export default function QuestionPage() {
     const router = useRouter();
     const { setLoading, setText } = useLoadingContext();
@@ -25,6 +32,20 @@ export default function QuestionPage() {
     const examIdParam = useLocalSearchParams()["examID"];
     const examId = Array.isArray(examIdParam) ? examIdParam[0] : examIdParam;
     const [questions, setQuestions] = useState<sq.Question[]>([]);
+    const [selectedOptionIndex, setSelectedOptionIndex] = useState<number | null>(null); // Track the selected option index
+    const [answers, setAnswers] = useState<answer[]>([]);
+    const [essayAnswer, setEssayAnswer] = useState<string>("");
+
+    const handleOptionSelect = (index: number) => {
+        setSelectedOptionIndex(index); // Update the selected option
+        console.log(index)
+        console.log(currentQuestion.multiple_choice[index].option_text)
+    };
+
+    const addAnswer = (newAnswer: answer) => {
+        setAnswers((prevAnswers) => [...prevAnswers, newAnswer]);
+        console.log(newAnswer)
+    };
 
     useEffect(() => {
         async function getExam() {
@@ -49,6 +70,8 @@ export default function QuestionPage() {
                     temp.push(exam.part[i].question[j])
                     //append the part name and part description to the question object
                     temp[temp.length-1].part = exam.part[i]
+                    console.log(exam.part[i].question[j])
+                    
                 }
             }
             setQuestions(temp)
@@ -59,22 +82,49 @@ export default function QuestionPage() {
 
     // Redirect to /summary if questionNumber exceeds the number of questions
     useEffect(() => {
+        console.log("checking answers")
+        console.log(answers)
         if (questions.length > 0 && currentQuestionIndex >= questions.length) {
             console.log("Redirecting to summary")
             console.log(questions.length)
+            //TODO: pass answers to summary page
+            
+
             router.navigate(`/dashboard/exam/${examID}/summary`);
         }
-    }, [currentQuestionIndex, examID, router, questions]);
+    }, [currentQuestionIndex, examID, router, questions, answers]);
 
-    // DELETE: const currentExam = exam;
     const currentQuestion = questions[currentQuestionIndex];
 
     const handlePress = useCallback(() => {
+        if (!currentQuestion) {
+            console.error("currentQuestion is undefined");
+            return;
+        }
+
+        //add answer to answers
+        if (currentQuestion.type === "multiple_choice") {
+            if (selectedOptionIndex === null) {
+                console.error("No option selected");
+                return;
+            }
+            addAnswer({
+                question_id: currentQuestion.id,
+                answer: currentQuestion.multiple_choice[selectedOptionIndex].option_text,
+            });
+        } else if (currentQuestion.type === "essay") {
+            addAnswer({
+                question_id: currentQuestion.id,
+                answer: essayAnswer,
+            });
+        }
+
+        setSelectedOptionIndex(null); // Reset selected option
         router.navigate({
             pathname: `/dashboard/exam/${examID}`,
             params: { questionNumber: Number(questionNumber) + 1 },
         });
-    }, [questionNumber, examID, router]);
+    },[currentQuestion, selectedOptionIndex, questionNumber, examID, router, essayAnswer]);
 
     const handleRubricPress = useCallback((text) => {
         setRubricText(text);
@@ -99,30 +149,27 @@ export default function QuestionPage() {
                 {/* Render multiple choice options */}
                 {currentQuestion.type === "multiple_choice" && (
                     <View className="flex flex-col gap-4">
-                        {currentQuestion.option.map((option, index) => (
-                            <MultipleChoiceItem key={index} text={option} />
+                        {currentQuestion.multiple_choice.map((option, index) => (
+                            <MultipleChoiceItem
+                                key={index}
+                                text={option.option_text}
+                                isSelected={selectedOptionIndex === index} // Pass whether this item is selected
+                                onSelect={() => handleOptionSelect(index)} // Handle selection
+                            />
                         ))}
                     </View>
                 )}
 
-                {/* Render true/false options */}
-                {/* {currentQuestion.type === "true_false" && (
-                    <View className="flex flex-col gap-4">
-                        <MultipleChoiceItem text="True" />
-                        <MultipleChoiceItem text="False" />
-                    </View>
-                )} */}
-
                 {/* Render identification input */}
-                {/* {currentQuestion.type === "identification" && (
+                {currentQuestion.type === "identification" && (
                     <View className="flex flex-col gap-4">
                         <Label nativeID={"QuestionInput"}>Answer</Label>
                         <Input />
                     </View>
-                )} */}
+                )}
 
                 {/* Render essay with rubric modal */}
-                {/* {currentQuestion.type === "essay" && (
+                {currentQuestion.type === "essay" && (
                     <>
                         <RubricModal
                             visible={showRubric}
@@ -132,13 +179,13 @@ export default function QuestionPage() {
 
                         <View className="flex flex-col gap-4">
                             <Label nativeID={"QuestionInput"}>Answer</Label>
-                            <Textarea numberOfLines={20} />
-                            <Button className="w-1/2" variant="secondary" onPress={() => handleRubricPress("To gain a perfect score of 5, your essay should discuss Fragmentation in Android Development")}>
+                            <Textarea onChangeText={setEssayAnswer} />
+                            <Button className="w-1/2" variant="secondary" onPress={() => handleRubricPress(`${currentQuestion.rubric[0].criteria}\n\n${currentQuestion.rubric[0].description}`)}>
                                 <Text>Rubrics</Text>
                             </Button>
                         </View>
                     </>
-                )} */}
+                )}
             </View>
 
             <View className="absolute bottom-0 w-full p-4">

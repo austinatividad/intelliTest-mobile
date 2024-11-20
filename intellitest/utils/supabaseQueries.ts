@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import * as auth from "@/utils/auth";
 
 
-export interface Exam {
+export interface ExamListItem {
     examName: string;
     examStatus: string;
     score: number;
@@ -27,7 +27,7 @@ export async function getExams() {
         console.error('Error getting exams:', error.message);
         return;
     }
-    const ExamList: Exam[] = data.map((exam: any) => {
+    const ExamList: ExamListItem[] = data.map((exam: any) => {
         return {
             examName: exam.exam_name,
             examStatus: exam.status,
@@ -38,4 +38,18 @@ export async function getExams() {
     });
 
     return ExamList;
+}
+
+export async function getExam(examId: string) {
+    const { data, error } = await supabase
+        .from('exam')
+        .select('*')
+        .eq('id', examId);
+
+    if (error) {
+        console.error('Error getting exam:', error.message);
+        return;
+    }
+
+    return data;
 }

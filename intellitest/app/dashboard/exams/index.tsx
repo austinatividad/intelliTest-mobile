@@ -13,8 +13,8 @@ export default function Index() {
   const { setLoading } = useLoadingContext();
   const [searchText, setSearchText] = React.useState("");
   const [selectedId, setSelectedId] = React.useState<string>();
-  const [exams, setExams] = React.useState<sq.Exam[] | null>(null);
-  const [filteredExams, setFilteredExams] = React.useState<sq.Exam[] | null>(null);
+  const [exams, setExams] = React.useState<sq.ExamListItem[] | null>(null);
+  const [filteredExams, setFilteredExams] = React.useState<sq.ExamListItem[] | null>(null);
 
   React.useEffect(() => {
     async function getExams() {
@@ -38,7 +38,7 @@ export default function Index() {
     }
   }, [searchText, exams]);
 
-  const renderItem = ({ item }: { item: sq.Exam }) => (
+  const renderItem = ({ item }: { item: sq.ExamListItem }) => (
     <View style={{ alignItems: "center" }} className="w-full">
       <ExamItem
         examName={item.examName}

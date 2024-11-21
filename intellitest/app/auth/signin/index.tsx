@@ -41,8 +41,6 @@ export default function Index() {
 
 
   function handleAuth() {
-    //TODO: Add actual authentication logic and pass email to the next page
-    //TODO: Replace this with the page
     signIn(email, password).then(({data, error}) => {
       if (error) {
         console.error(error.name);

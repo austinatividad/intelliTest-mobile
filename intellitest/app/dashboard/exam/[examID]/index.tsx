@@ -88,9 +88,12 @@ export default function QuestionPage() {
             console.log("Redirecting to summary")
             console.log(questions.length)
             //TODO: pass answers to summary page
-            
+            router.navigate(
+                {
+                    pathname: `/dashboard/exam/${examID}/summary`,
+                    params: { answers: JSON.stringify(answers) },
 
-            router.navigate(`/dashboard/exam/${examID}/summary`);
+                });
         }
     }, [currentQuestionIndex, examID, router, questions, answers]);
 

@@ -2,7 +2,7 @@ import { ScrollView, View, Modal, Pressable } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { dummy } from "@/lib/dummy_data";
 import ExplanationModal from "@/components/explanationModal";
 import FeedbackModal from "@/components/ui/feedbackModal";
@@ -13,6 +13,7 @@ export default function summaryPage() {
     const [feedbackVisible, setFeedbackVisible] = useState(false);
     const [explanationText, setExplanationText] = useState("");
     const [feedbackText, setFeedbackText] = useState("");
+    
 
     // Function to retake the exam, redirects to the first question
     const handleRetakeButton = () => {

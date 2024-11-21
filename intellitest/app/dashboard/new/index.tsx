@@ -142,6 +142,7 @@ export default function Index() {
           onChangeText={setInputText}
           numberOfLines={8}
         />
+        {/* TODO: ADD an easily accessible "paste from clipboard" */}
 
         {/* Upload Documents Button */}
         <Button variant="secondary" className="w-1/2" onPress={handleDocumentSelection}>

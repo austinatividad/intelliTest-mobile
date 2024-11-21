@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Image } from "lucide-react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
-import React from "react";
+import React, { useEffect } from "react";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
 
 import {Search} from "lucide-react-native";
@@ -15,13 +15,27 @@ import { dummy, ItemData } from "@/lib/dummy_data";
 export default function summaryPage() {
     const router = useRouter();
     const { examID } = useLocalSearchParams();
+    const { answers } = useLocalSearchParams();
 
+    useEffect(() => {
+        console.log("Answers:")
+        console.log(answers)
+    }, [answers]);
+
+
+    useEffect(() => {
+        //TODO: GET THE EXAM DATA 
+    })
+    
 
     
     const onGradeMe = () => {
         console.log("Grading...")
         router.navigate(
-            "/dashboard/exam/" + examID + "/results"
+            {
+                pathname: "/dashboard/exam/" + examID + "/results",
+                params: { answers: answers }
+            }
         )
     }
     const currentExam = dummy[3];
@@ -103,10 +117,6 @@ In conclusion, testing long text lengths is an important process for ensuring th
             </View> 
             <Button onPress={onGradeMe} className="mb-4">
                 <Text>Grade Me!</Text>
-            </Button>
-
-            <Button variant="secondary">
-                <Text>Review Answers</Text>
             </Button>
 
             <View className="mb-10"></View>

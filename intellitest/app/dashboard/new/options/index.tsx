@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Document, ExamInputContent, fileTypes } from "@/utils/types";
 import { supabase } from "@/lib/supabase";
 import { createBucket, uploadImagesToBucket } from "@/utils/supabaseQueries";
+import ExtractBase64Images from "@/utils/pdfUtil";
 
 export default function Index() {
   const router = useRouter();
@@ -16,6 +17,10 @@ export default function Index() {
   const [examName, setExamName] = useState(""); // State to track exam name input
   const [bucketName, setBucketName] = useState("");
   const [shouldContinue, setShouldContinue] = useState(false);
+
+  const [startExtraction, setStartExtraction] = useState(false); // Controls when extraction starts
+  const [extractedIMGfromPDF, setExtractedIMGfromPDF] = useState([]); // Stores extracted images
+
   const examInputContent : ExamInputContent = JSON.parse(useLocalSearchParams<{ examInputContent: string }>().examInputContent); // Get the exam input content from the URL
 
   // Check if the Continue button should be visible
@@ -23,22 +28,23 @@ export default function Index() {
 
   const imageDocuments = examInputContent.documents.filter(document => document.fileType === fileTypes.image);
   const textDocuments = examInputContent.documents.filter(document => document.fileType === fileTypes.text);
+  const textDocumentURL = textDocuments.map(doc => doc.uri)
 
-  const createSupabaseBucket = async () => {
-    try {
-      const data = await createBucket();
-      setBucketName(data.name);
-    } catch (error) {
-      console.error(`Bucket Creation Failed: ${error}`)
-    } 
-  };
+  // const createSupabaseBucket = async () => {
+  //   try {
+  //     const data = await createBucket();
+  //     setBucketName(data.name);
+  //   } catch (error) {
+  //     console.error(`Bucket Creation Failed: ${error}`)
+  //   } 
+  // };
 
   const handleContinue = () => {
     // Add logic to handle the continue button press (e.g., navigation)
 
     setLoading(true);
-    setShouldContinue(true);
-
+    setStartExtraction(true);
+    setText("Starting Conversion");
 
     // router.push({
     //     pathname: "/dashboard/exam",
@@ -46,24 +52,40 @@ export default function Index() {
     // });
   };
 
-  useEffect(() => {
-    if (imageDocuments.length > 0 && shouldContinue) {
-      setText("Creating Bucket...");
-      createSupabaseBucket();
-    }
 
-  }, [shouldContinue]);
+  // useEffect(() => {
+  //   if (imageDocuments.length > 0 && shouldContinue) {
+  //     setText("Creating Bucket...");
+  //     //createSupabaseBucket();
+  //   }
 
-  useEffect(() => {
-    if (bucketName != "") {
-      setText("Uploading Imagees...")
-      uploadImagesToBucket(bucketName, imageDocuments)
-      setText("Upload Images done!");
-    }
+  // }, [shouldContinue]);
 
-  }, [bucketName]);
+  // useEffect(() => {
+  //   if (bucketName != "") {
+  //     setText("Uploading Imagees...")
+  //     uploadImagesToBucket(bucketName, imageDocuments)
+  //     setText("Upload Images done!");
+  //   }
 
+  // }, [bucketName]);
 
+  // useEffect(() => {
+  //   if (textDocuments.length > 0) {
+  //     textDocuments.map(async (file) => {
+  //       setText("Converting PDFs to Images...")
+  //       const b64Array = await convertPDFtoImageBase64(file.uri);
+
+  //     })
+  //   }
+  // }, [])
+
+  const handleImagesExtracted = (extractedImages: any) => {
+    setText('Extracting Images');
+    setExtractedIMGfromPDF(extractedImages); // Save extracted images to state
+    setStartExtraction(false); // Reset extraction flag after completion
+    console.log('Extracted Images:', extractedImages);
+  };
   return (
     <View style={{ flex: 1 }}>
     <View className="p-4 pt-9">
@@ -135,6 +157,18 @@ export default function Index() {
             <Text className="text-white">Generate Test</Text>
         </Button>
         </View>
+    )}
+
+    {startExtraction && (
+      <ExtractBase64Images
+        pdfUrls={textDocumentURL}
+        onImagesExtracted={(images) => {
+          console.log('All PDFs Processed:');
+          console.log(images); // Logs all extracted images
+          }
+        }
+
+/>
     )}
 </View>
   );

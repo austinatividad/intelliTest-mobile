@@ -71,7 +71,7 @@ export default function Index() {
     }
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: '*/*', // Allow all file types; adjust as needed
+        type: 'image/*', // Allow all file types; adjust as needed
         copyToCacheDirectory: true,
       });
 

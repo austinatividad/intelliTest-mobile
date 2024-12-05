@@ -1,5 +1,11 @@
 import { QuestionType } from './supabaseQueries';
 import { z } from 'zod';
+import OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+
+const openai = new OpenAI({
+  apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '', // Ensure your API key is stored securely
+});
 
 const QuestionTypeSchema = z.enum([QuestionType.ESSAY, QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.IDENTIFICATION]);
 
@@ -70,7 +76,23 @@ const promptList = new Map<string, string>([
     });
   }
   
+  async function generateTests(notes: string) {
+    const prompt = await openai.beta.chat.completions.parse({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: "system", content: "Generate an appropirate amount of questions bsed on the following notes. The questions should be divided into three parts as follows: Knowledge (Multiple Choice/Identification), Process (Modified True or False), Understanding (Essay). For the Knowledge and Process Questions, give the correct answer along with the list of choices. For the Understanding questions, give the rubric. Follow the ExamFormat in generating the exam."
+        },
+        {
+          role: "user", content: `The notes are: ${notes}`
+        }
+      ],
+      response_format: zodResponseFormat(ExamSchema, 'ExamFormat')
+    });
+
+    const exam = prompt.choices[0].message.parsed;
+    return exam;
+  }
   
-  
-  export { promptList, getPrompt };
+  export { promptList, getPrompt, generateTests };
   

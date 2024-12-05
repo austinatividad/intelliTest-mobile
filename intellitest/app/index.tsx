@@ -7,8 +7,6 @@ import { useRouter } from "expo-router";
 import { getSession } from "@/utils/auth";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
-import { generateTests } from "@/utils/promptList";
-import { TEST } from "@/utils/testprompts";
 export default function Index() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(true);

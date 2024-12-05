@@ -76,7 +76,26 @@ const promptList = new Map<string, string>([
     });
   }
   
-  async function generateTests(notes: string) {
+  async function generateExam(notes?: string, base64Images?: string[]) {
+
+      // Check if both notes and images are missing
+      if (!notes && (!base64Images || base64Images.length === 0)) {
+        throw new Error("Insufficient data: Both notes and images are missing. Provide at least one input.");
+    }
+
+    // Process notes if provided
+    const notesContent = notes ? `The notes are: ${notes}` : "No textual notes provided.";
+
+    // Process images if provided
+    let imageDescriptions = "";
+    if (base64Images && base64Images.length > 0) {
+        imageDescriptions = base64Images.map((base64, index) => {
+            return `Image ${index + 1}: This is a Base64-encoded image. Content:\n${base64.slice(0, 100)}...`;
+        }).join("\n");
+
+        imageDescriptions = `\n\nThe following images are also provided:\n${imageDescriptions}`;
+    }
+
     const prompt = await openai.beta.chat.completions.parse({
       model: 'gpt-4o',
       messages: [
@@ -84,7 +103,7 @@ const promptList = new Map<string, string>([
           role: "system", content: "Generate an appropirate amount of questions bsed on the following notes. The questions should be divided into three parts as follows: Knowledge (Multiple Choice/Identification), Process (Modified True or False), Understanding (Essay). For the Knowledge and Process Questions, give the correct answer along with the list of choices. For the Understanding questions, give the rubric. Follow the ExamFormat in generating the exam."
         },
         {
-          role: "user", content: `The notes are: ${notes}`
+          role: "user", content: `${notesContent}${imageDescriptions}`
         }
       ],
       response_format: zodResponseFormat(ExamSchema, 'ExamFormat')
@@ -94,5 +113,5 @@ const promptList = new Map<string, string>([
     return exam;
   }
   
-  export { promptList, getPrompt, generateTests };
+  export { promptList, getPrompt, generateExam };
   

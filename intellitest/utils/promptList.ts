@@ -49,6 +49,9 @@ const promptList = new Map<string, string>([
     const notesContent = notes ? `The notes are: ${notes}` : "No textual notes provided.";
 
     // Process images if provided
+
+    //! FIX: This does not work; tried to make a test with images of physics equations, and it ended up making a quiz about base64 encoding
+
     let imageDescriptions = "";
     if (base64Images && base64Images.length > 0) {
         imageDescriptions = base64Images.map((base64, index) => {
@@ -62,10 +65,10 @@ const promptList = new Map<string, string>([
       model: 'gpt-4o',
       messages: [
         {
-          role: "system", content: "Generate an appropirate amount of questions bsed on the following notes. The questions should be divided into three parts as follows: Knowledge (Multiple Choice), Process (Modified True or False), Understanding (Essay). For the Knowledge and Process Questions, give the correct answer along with the list of choices. For the Understanding questions, give the rubric using the K-12 Philippine Curriculum. Follow the ExamFormat in generating the exam."
+          role: "system", content: "You are a Departmental Mock Exam Generator. Generate the maximum amount of possible questions based on the following provided contents, with a minimum of 30 questions. The questions should be divided into three equal point-wise parts as follows: Knowledge (Multiple Choice), Process (Modified True or False - Multiple choice format, Options are set to \"Statement A is True\", \"Statement B is true\", \"Both Statements are True\", \"Both Statements are False\"), Understanding (Essay to test the ). For the Knowledge and Process Questions, provide the correct answer along with the list of choices. For the Understanding questions, provide a rubric that would guide the user on how they are graded. Follow the ExamFormat in generating the exam."
         },
         {
-          role: "user", content: `${notesContent}${imageDescriptions}`
+          role: "user", content: `${notesContent} ${imageDescriptions}`
         }
       ],
       response_format: zodResponseFormat(ExamSchema, 'ExamFormat')

@@ -22,7 +22,7 @@ export interface ExamInputContent {
     documents: Document[];
 }
 
-export const QuestionTypeSchema = z.enum([QuestionType.ESSAY, QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.IDENTIFICATION]);
+export const QuestionTypeSchema = z.enum([QuestionType.ESSAY, QuestionType.MULTIPLE_CHOICE, QuestionType.IDENTIFICATION]);
 
 export const MultipleChoiceOptionSchema = z.object({
   option_text: z.string(),
@@ -48,10 +48,12 @@ export const PartSchema = z.object({
   questions: z.array(QuestionSchema),
 });
 
+export const ExamStatusSchema = z.enum(['Not Yet Answered', 'Complete']);
+
 export const ExamSchema = z.object({
   exam_name: z.string(),
   exam_description: z.string(),
-  status: z.string(),
+  status: ExamStatusSchema,
   created_at: z.string(),
   attempt_count: z.number(),
   score: z.number(),

@@ -6,6 +6,7 @@ import React, { useEffect, useState } from "react";
 import { dummy } from "@/lib/dummy_data";
 import ExplanationModal from "@/components/explanationModal";
 import FeedbackModal from "@/components/ui/feedbackModal";
+import { BackHandler } from "react-native";
 export default function summaryPage() {
     const router = useRouter();
     const { examID } = useLocalSearchParams();
@@ -13,6 +14,22 @@ export default function summaryPage() {
     const [feedbackVisible, setFeedbackVisible] = useState(false);
     const [explanationText, setExplanationText] = useState("");
     const [feedbackText, setFeedbackText] = useState("");
+
+    useEffect(() => {
+        const backAction = () => {
+            router.navigate({
+                pathname: `/dashboard/exams`,
+            });
+            return true;
+        };
+
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction
+        );
+
+        return () => backHandler.remove();
+    }, []);
     
 
     // Function to retake the exam, redirects to the first question

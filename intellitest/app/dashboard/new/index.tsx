@@ -145,7 +145,8 @@ export default function Index() {
   const isButtonVisible = inputText.trim().length > 0 || showDocuments;
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
+    <ScrollView style={{ flex: 1 }}>
       <View className="p-4 pt-12">
         <Text className="text-3xl font-bold">Generate a Mock Test</Text>
 
@@ -158,6 +159,7 @@ export default function Index() {
           value={inputText}
           onChangeText={setInputText}
           numberOfLines={8}
+          maxLength={10000}
         />
         {/* TODO: ADD an easily accessible "paste from clipboard" */}
 
@@ -173,34 +175,34 @@ export default function Index() {
 
         {/* Show list of uploaded documents when button is clicked */}
         {showDocuments && visibleDocuments.length > 0 && (
-          <View className="mt-4">
+            <View className="mt-4">
             <Text className="text-xl font-bold mb-1">Uploaded Documents:</Text>
-            <FlatList
-              data={visibleDocuments}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <DocumentItem
-                  fileName={item.fileName}
-                  fileType={item.fileType}
-                  id={item.id}
-                  isRemoved={item.isRemoved}
-                  onPress={handleExamPress}
-                />
-              )}
-            />
-          </View>
+            {visibleDocuments.map((item) => (
+              <DocumentItem
+              key={item.id}
+              fileName={item.fileName}
+              fileType={item.fileType}
+              id={item.id}
+              isRemoved={item.isRemoved}
+              onPress={handleExamPress}
+              />
+            ))}
+            </View>
         )}
 
       </View>
 
-      {/* Conditionally render the Generate Test button */}
-      {isButtonVisible && (
+      
+    </ScrollView>
+    {/* Conditionally render the Generate Test button */}
+    {isButtonVisible && (
         <View
           className="w-full"
           style={{
             bottom: 0,
             position: "absolute",
             padding: 10,
+            backgroundColor: "#fff"
           }}
         >
           <Button variant={null} className="bg-black" onPress={handleContinue}>
@@ -208,7 +210,7 @@ export default function Index() {
           </Button>
         </View>
       )}
-      {!isButtonVisible && (
+    {!isButtonVisible && (
         <View
           className="w-full"
           style={{
@@ -222,7 +224,7 @@ export default function Index() {
           </Button>
         </View>
       )}
-    </View>
+    </>
   );
 }
 function determineFileType(name: string | null): fileTypes {

@@ -111,7 +111,8 @@ export async function getExams() {
     const { data, error } = await supabase
         .from('exam')
         .select('*')
-        .eq('user_id', id);
+        .eq('user_id', id)
+        .order('created_at', { ascending: false });
     console.log("finished getting exams");
     console.log(data);
     if (error) {
@@ -130,6 +131,7 @@ export async function getExams() {
 
     return ExamList;
 }
+
 
 export async function getExam(examId: string) {
     

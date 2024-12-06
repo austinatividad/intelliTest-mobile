@@ -8,8 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Document, ExamInputContent, fileTypes } from "@/utils/types";
 import { supabase } from "@/lib/supabase";
-import { createBucket, uploadImagesToBucket } from "@/utils/supabaseQueries";
+import { createBucket, insertExam, uploadImagesToBucket } from "@/utils/supabaseQueries";
 import ExtractBase64Images from "@/utils/pdfUtil";
+
+import { generateExam } from "@/utils/promptList";
+
+import { extractImageBase64Values } from "@/utils/imageUtil";
+
+import { ExamSchema } from "@/utils/types";
+import { z } from "zod";
 
 export default function Index() {
   const router = useRouter();
@@ -21,6 +28,9 @@ export default function Index() {
   const [startExtraction, setStartExtraction] = useState(false); // Controls when extraction starts
   const [extractedIMGfromPDF, setExtractedIMGfromPDF] = useState([]); // Stores extracted images
 
+  const [exam, setExam] = useState<z.infer<typeof ExamSchema> | undefined>(undefined);
+  const [examId, setExamId] = useState("");
+
   const examInputContent : ExamInputContent = JSON.parse(useLocalSearchParams<{ examInputContent: string }>().examInputContent); // Get the exam input content from the URL
 
   // Check if the Continue button should be visible
@@ -29,7 +39,7 @@ export default function Index() {
   const imageDocuments = examInputContent.documents.filter(document => document.fileType === fileTypes.image);
   const textDocuments = examInputContent.documents.filter(document => document.fileType === fileTypes.text);
   const textDocumentURL = textDocuments.map(doc => doc.uri)
-
+  const imageDocArr = imageDocuments
   // const createSupabaseBucket = async () => {
   //   try {
   //     const data = await createBucket();
@@ -43,8 +53,8 @@ export default function Index() {
     // Add logic to handle the continue button press (e.g., navigation)
 
     setLoading(true);
-    setStartExtraction(true);
-    setText("Starting Conversion");
+    setShouldContinue(true);
+    setText("Generating Exam");
 
     // router.push({
     //     pathname: "/dashboard/exam",
@@ -52,7 +62,71 @@ export default function Index() {
     // });
   };
 
+  //TODO: make a useEffect for making generating an exam prompt, adding results to supabase, and redirecting to examId generated.
+  useEffect(() => {
+    if (shouldContinue) {
+      setText("Creating Exam...");
+  
+      async function generateExamGPT() {
+        console.log("Input Text");
+        console.log(examInputContent.inputText);
+        try {
+          const exam = await generateExam(
+            examInputContent.inputText,
+            extractImageBase64Values(imageDocuments)
+          );
 
+          exam.exam_name = examName;
+          
+          console.log(exam);
+          setExam(exam); // Set the exam directly
+        } catch (error: any) {
+          console.error("Error generating exam:", error);
+          setText("Error generating the exam. Please try again.");
+        }
+      }
+  
+      generateExamGPT();
+    }
+  }, [shouldContinue]);
+
+  useEffect(() => {
+    if (exam) {
+      setText("Uploading Exam to Database...");
+
+      async function uploadExam() {
+        if (exam == undefined) return;
+        try {
+          var result = await insertExam(exam);
+          if (result) {
+            console.log(`Exam ID: ${result}`);
+            setExamId(result);
+          } else {
+  
+            //TODO: ERROR HANDLING HERE
+            setText("ERROR UPLOADING TO DATABASE");
+          }
+        } catch (error:any) {
+          console.log(error);
+          setLoading(false);
+        }
+
+      }
+
+      uploadExam();
+    }
+  }, [exam]);
+
+  useEffect(() => {
+    if (examId) {
+      setText("Redirecting to Exam...");
+      router.push({
+          pathname: "/dashboard/exam",
+          params: { examId: examId },
+      });
+
+    } 
+  }, [examId])
   // useEffect(() => {
   //   if (imageDocuments.length > 0 && shouldContinue) {
   //     setText("Creating Bucket...");

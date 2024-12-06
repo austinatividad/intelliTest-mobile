@@ -1,50 +1,11 @@
-import { QuestionType } from './supabaseQueries';
-import { z } from 'zod';
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-
+import { ExamSchema } from "./types";
+import { z } from "zod";
 const openai = new OpenAI({
   apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '', // Ensure your API key is stored securely
 });
 
-const QuestionTypeSchema = z.enum([QuestionType.ESSAY, QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE, QuestionType.IDENTIFICATION]);
-
-const MultipleChoiceOptionSchema = z.object({
-  question_id: z.string(),
-  option_text: z.string(),
-  is_correct: z.boolean(),
-});
-
-const RubricSchema = z.object({
-  criteria: z.string(),
-  description: z.string(),
-  points: z.number(),
-});
-
-const QuestionSchema = z.object({
-  question: z.string(),
-  type: QuestionTypeSchema,
-  points: z.number(),
-  options: z.array(MultipleChoiceOptionSchema),
-  rubric: z.array(RubricSchema),
-});
-
-const PartSchema = z.object({
-  part_name: z.string(),
-  part_description: z.string(),
-  questions: z.array(QuestionSchema),
-});
-
-const ExamSchema = z.object({
-  exam_name: z.string(),
-  exam_description: z.string(),
-  status: z.string(),
-  created_at: z.string(),
-  attempt_count: z.number(),
-  score: z.number(),
-  total_score: z.number(),
-  part: z.array(PartSchema),
-});
 
 const promptList = new Map<string, string>([
     // Prompts list
@@ -76,7 +37,8 @@ const promptList = new Map<string, string>([
     });
   }
   
-  async function generateExam(notes?: string, base64Images?: string[]) {
+  //TODO: Add options...
+  async function generateExam(notes?: string, base64Images?: string[]) : Promise<z.infer<typeof ExamSchema>> {
 
       // Check if both notes and images are missing
       if (!notes && (!base64Images || base64Images.length === 0)) {
@@ -100,7 +62,7 @@ const promptList = new Map<string, string>([
       model: 'gpt-4o',
       messages: [
         {
-          role: "system", content: "Generate an appropirate amount of questions bsed on the following notes. The questions should be divided into three parts as follows: Knowledge (Multiple Choice/Identification), Process (Modified True or False), Understanding (Essay). For the Knowledge and Process Questions, give the correct answer along with the list of choices. For the Understanding questions, give the rubric. Follow the ExamFormat in generating the exam."
+          role: "system", content: "Generate an appropirate amount of questions bsed on the following notes. The questions should be divided into three parts as follows: Knowledge (Multiple Choice), Process (Modified True or False), Understanding (Essay). For the Knowledge and Process Questions, give the correct answer along with the list of choices. For the Understanding questions, give the rubric using the K-12 Philippine Curriculum. Follow the ExamFormat in generating the exam."
         },
         {
           role: "user", content: `${notesContent}${imageDescriptions}`
@@ -109,7 +71,7 @@ const promptList = new Map<string, string>([
       response_format: zodResponseFormat(ExamSchema, 'ExamFormat')
     });
 
-    const exam = prompt.choices[0].message.parsed;
+    const exam = ExamSchema.parse(prompt.choices[0].message.parsed);
     return exam;
   }
   

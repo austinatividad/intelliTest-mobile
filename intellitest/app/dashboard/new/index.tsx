@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DocumentItem } from "@/components/IntelliTest/Dashboard/document-item"; // Import ExamItem
 import { X } from "lucide-react-native";
 import { Document, ExamInputContent, fileTypes } from "@/utils/types";
-
+import { convertImageToBase64 } from "@/utils/imageUtil";
 
 export default function Index() {
   const router = useRouter();
@@ -48,16 +48,33 @@ export default function Index() {
       return;
     }
     
-    results.assets.map((asset: DocumentPicker.DocumentPickerAsset | ImagePicker.ImagePickerAsset) => {
+    results.assets.map( async (asset: DocumentPicker.DocumentPickerAsset | ImagePicker.ImagePickerAsset) => {
       const fileName = "name" in asset ? asset.name : asset.fileName ? asset.fileName : null
-      
+      const isImageAsset = asset.mimeType?.startsWith("image/") || /\.(jpg|jpeg|png|gif|bmp|webp)$/i.test(fileName || "");
+
+      // If the asset is an image, check if it already has a base64 property or process it
+      let base64Value: string | null = null;
+
+      if (isImageAsset) {
+        // Use type assertion to check for a custom base64 property
+        const imageAsset = asset as ImagePicker.ImagePickerAsset & { base64?: string };
+        if (imageAsset.base64 && imageAsset.base64.trim() !== "") {
+          base64Value = imageAsset.base64; // Use existing base64 if available
+        } else {
+          // Call your function to convert the image to base64
+          base64Value = await convertImageToBase64(asset.uri); // Ensure this function is implemented correctly
+        }
+      }
+    
+
+
       const newDocument: Document = {
         id: Date.now().toString(),
         fileName: fileName || "No file name provided",
         fileType: determineFileType(fileName), // Implement this function based on your fileTypes enum
         uri: asset.uri,
         isRemoved: false,
-        base64: "base64" in asset ? asset.base64 : null,
+        base64: base64Value,
       };
       setDocuments((prevDocuments) => [...prevDocuments, newDocument]);
       setShowDocuments(true);

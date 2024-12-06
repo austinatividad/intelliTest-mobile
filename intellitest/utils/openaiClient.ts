@@ -28,6 +28,7 @@ export async function generateOutputWithReplacements(promptName: string, replace
     return await generateOutput(getPrompt(promptName, replacements));
 }
 
+export async function generateOutputWithAttachments(promptName: string, attachments: Record<string, string>) {}
 export async function testPrompt() {
     return await generateOutput('Your name is John and you are a lawyer.');
 }

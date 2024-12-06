@@ -2,9 +2,11 @@ import { supabase } from "@/lib/supabase";
 import * as auth from "@/utils/auth";
 import { err } from "react-native-svg";
 import * as Crypto from 'expo-crypto';
-import { Document } from "./types";
+import { Document, ExamSchema, MultipleChoiceOptionSchema, PartSchema, QuestionSchema, RubricSchema } from "./types";
 import { decode } from 'base64-arraybuffer'
 import { convertImageToBase64 } from "./imageUtil";
+
+import { z } from 'zod';
 
 // exam details without the questions
 export interface ExamListItem {
@@ -191,3 +193,140 @@ const generateUUID = async (): Promise<string> => {
       .join('')
       .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5'); // Format as UUID
   };
+
+  async function insertMultipleChoiceOptions(
+    questionId: string,
+    options: z.infer<typeof MultipleChoiceOptionSchema>[]
+  ) {
+    const formattedOptions = options.map((option) => ({
+      question_id: questionId,
+      option_text: option.option_text,
+      is_correct: option.is_correct,
+    }));
+  
+    const { error } = await supabase.from('multiple_choice').insert(formattedOptions);
+  
+    if (error) {
+      console.error('Error inserting multiple-choice options:', error.message);
+      throw error;
+    }
+  }
+  
+  async function insertRubrics(
+    questionId: string,
+    rubrics: z.infer<typeof RubricSchema>[]
+  ) {
+    const formattedRubrics = rubrics.map((rubric) => ({
+      question_id: questionId,
+      criteria: rubric.criteria,
+      description: rubric.description,
+    }));
+  
+    const { error } = await supabase.from('rubric').insert(formattedRubrics);
+  
+    if (error) {
+      console.error('Error inserting rubrics:', error.message);
+      throw error;
+    }
+  }
+  
+
+  async function insertQuestions(
+    partId: string,
+    examId: string,
+    questions: z.infer<typeof QuestionSchema>[]
+  ) {
+    for (const question of questions) {
+      const { data, error } = await supabase
+        .from('question')
+        .insert({
+          part_id: partId,
+          exam_id: examId,
+          question: question.question,
+          type: question.type,
+          points: question.points,
+        })
+        .select('id')
+        .single();
+  
+      if (error) {
+        console.error('Error inserting question:', error.message);
+        throw error;
+      }
+  
+      const questionId = data.id;
+  
+      if (question.type === QuestionType.MULTIPLE_CHOICE) {
+        await insertMultipleChoiceOptions(questionId, question.options || []);
+      } else if (question.type === QuestionType.ESSAY) {
+        await insertRubrics(questionId, question.rubric || []);
+      }
+    }
+  }
+  
+
+  async function insertParts(
+    examId: string,
+    parts: z.infer<typeof PartSchema>[]
+  ) {
+    for (const part of parts) {
+      const { data, error } = await supabase
+        .from('part')
+        .insert({
+          exam_id: examId,
+          part_name: part.part_name,
+          part_description: part.part_description,
+        })
+        .select('id')
+        .single();
+  
+      if (error) {
+        console.error('Error inserting part:', error.message);
+        throw error;
+      }
+  
+      const partId = data.id;
+  
+      await insertQuestions(partId, examId, part.questions);
+    }
+  }
+  
+
+  export async function insertExam(exam: z.infer<typeof ExamSchema>) {
+    try {
+        const session = await auth.getSession();
+        const id = session.data.session?.user.id;
+      // Insert the exam
+      const { data, error } = await supabase
+        .from('exam')
+        .insert({
+            user_id: id,
+            exam_name: exam.exam_name,
+            exam_description: exam.exam_description,
+            status: exam.status,
+            created_at: new Date(),
+            attempt_count: exam.attempt_count,
+            score: exam.score,
+            total_score: exam.total_score,
+        })
+        .select('id')
+        .single();
+  
+      if (error) {
+        console.error('Error inserting exam:', error);
+        throw error;
+      }
+  
+      const examId = data.id;
+  
+      // Insert parts and their questions
+      await insertParts(examId, exam.part);
+  
+      console.log('Exam created successfully with all parts and questions!');
+      return examId;
+    } catch (error: any) {
+      console.error('Error creating exam:', error);
+      throw error;
+    }
+  }
+  

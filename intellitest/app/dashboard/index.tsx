@@ -101,6 +101,7 @@ export default function Index() {
     // Add logic to handle test press event
   };
 
+  //TODO: ADJUST SCORE AND TOTAL SCORE
   const sections = [
     {
       title: "Latest Tests",
@@ -110,8 +111,7 @@ export default function Index() {
           examName={item.testName}
           examStatus={item.userScore === -1 ? "NEW" : `${item.userScore}/${item.testScore}`}
           id={item.id}
-          onPress={handleExamPress}
-        />
+          onPress={handleExamPress} score={0} totalScore={0}        />
       ),
     },
     {
@@ -122,8 +122,7 @@ export default function Index() {
           examName={item.testName}
           examStatus={`${item.userScore}/${item.testScore}`}
           id={item.id}
-          onPress={handleExamPress}
-        />
+          onPress={handleExamPress} score={0} totalScore={0}        />
       ),
     },
   ];

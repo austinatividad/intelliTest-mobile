@@ -18,6 +18,7 @@ import { set } from "date-fns";
 
 interface answer {
     question_id: string;
+    question: string;
     answer: string;
 }
 
@@ -62,7 +63,7 @@ export default function QuestionPage() {
     
         console.log(newAnswer);
     };
-
+    
     // modifies the back button to go to the previous question; if first question, alert if they want to exit the exam, all progress will be lost
     const handleBackPress = useCallback(() => {
         if (currentQuestionIndex === 0) {
@@ -213,6 +214,7 @@ export default function QuestionPage() {
             }
             addAnswer({
                 question_id: currentQuestion.id,
+                question: currentQuestion.question, // Add the question text
                 answer: currentQuestion.multiple_choice[selectedOptionIndex].option_text,
             });
         }
@@ -225,6 +227,7 @@ export default function QuestionPage() {
             params: { questionNumber: Number(questionNumber) + 1 },
         });
     }, [currentQuestion, selectedOptionIndex, questionNumber, examID, router]);
+    
 
     const handleEssayAnswerChange = (text: string) => {
         setAnswers((prevAnswers) => {
@@ -235,14 +238,25 @@ export default function QuestionPage() {
             if (existingAnswerIndex !== -1) {
                 // Update the existing answer
                 const updatedAnswers = [...prevAnswers];
-                updatedAnswers[existingAnswerIndex].answer = text;
+                updatedAnswers[existingAnswerIndex] = {
+                    ...updatedAnswers[existingAnswerIndex],
+                    answer: text,
+                };
                 return updatedAnswers;
             }
     
-            // Add a new answer
-            return [...prevAnswers, { question_id: currentQuestion.id, answer: text }];
+            // Add a new answer with the question text
+            return [
+                ...prevAnswers,
+                {
+                    question_id: currentQuestion.id,
+                    question: currentQuestion.question, // Add the question text
+                    answer: text,
+                },
+            ];
         });
     };
+    
 
     useEffect(() => {
         if (currentQuestion) {

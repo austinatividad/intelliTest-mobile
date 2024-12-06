@@ -23,6 +23,7 @@ export default function summaryPage() {
     const { examID } = useLocalSearchParams();
     const { answers } = useLocalSearchParams();
     const [parsedAnswers, setParsedAnswers] = useState([]);
+    const { setLoading, setText } = useLoadingContext();
 
     useEffect(() => {
         console.log("Answers:")
@@ -45,12 +46,9 @@ export default function summaryPage() {
     
     const onGradeMe = () => {
         console.log("Grading...")
-        router.navigate(
-            {
-                pathname: "/dashboard/exam/" + examID + "/results",
-                params: { answers: answers }
-            }
-        )
+        setLoading(true);
+        setText("Currently Grading your Test...")
+
     }
     const currentExam = dummy[3];
 
@@ -71,7 +69,7 @@ export default function summaryPage() {
                         <Text className="px-4 text-gray-500">Question {index + 1}</Text>
                         <Text className="px-4">{answer.question}</Text>
 
-                        <Text className="px-4 text-gray-500">Your Answer</Text>
+                        <Text className="px-4 text-gray-500 pt-5">Your Answer</Text>
                         <Text className="px-4">{answer.answer}</Text>
                     </View>
                 ))}

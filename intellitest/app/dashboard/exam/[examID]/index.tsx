@@ -209,7 +209,7 @@ export default function QuestionPage() {
         // Handle multiple choice
         if (currentQuestion.type === "multiple_choice") {
             if (selectedOptionIndex === null) {
-                console.error("No option selected");
+                Alert.alert("Select an option", "Try your best to answer!")
                 return;
             }
             addAnswer({
@@ -302,12 +302,17 @@ export default function QuestionPage() {
                 <Text className="text-xl font-bold">{currentQuestion.part.part_name}: {currentQuestion.part.part_description}</Text>
                 <Text>Question {questionNumber}</Text>
                 <View className="rounded-3xl bg-gray-100 p-4 h-auto">
-                    <Text>{currentQuestion.question}</Text>
+                    <Text>
+                        {currentQuestion.question.includes("Statement B:") 
+                            ? currentQuestion.question.replace("Statement B:", "\n\nStatement B:") 
+                            : currentQuestion.question}
+                    </Text>
                 </View>
 
                 {/* Render multiple choice options */}
                 {currentQuestion.type === "multiple_choice" && (
                     <View className="flex flex-col gap-4">
+                    
                         {currentQuestion.multiple_choice.map((option, index) => (
                             <MultipleChoiceItem
                                 key={index}
@@ -318,7 +323,6 @@ export default function QuestionPage() {
                         ))}
                     </View>
                 )}
-
                 {/* Render identification input */}
                 {currentQuestion.type === "identification" && (
                     <View className="flex flex-col gap-4">

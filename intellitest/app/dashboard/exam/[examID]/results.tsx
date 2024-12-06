@@ -7,6 +7,7 @@ import { dummy } from "@/lib/dummy_data";
 import ExplanationModal from "@/components/explanationModal";
 import FeedbackModal from "@/components/ui/feedbackModal";
 import { BackHandler } from "react-native";
+
 export default function summaryPage() {
     const router = useRouter();
     const { examID } = useLocalSearchParams();

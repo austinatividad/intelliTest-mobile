@@ -25,11 +25,11 @@ interface LoadingProviderProps {
 export const LoadingProvider = ({ children }: LoadingProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
-  // useEffect(() => {
-  //   if (!loading) {
-  //     setText("");
-  //   }
-  // }, [loading]);
+  useEffect(() => {
+    if (!loading) {
+      setText("");
+    }
+  }, [loading]);
 
   return (
     <View style={styles.container}>

@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { ExamSchema } from "./types";
+import { ExamSchema, RubricSchema } from "./types";
 import { z } from "zod";
 import { ChatCompletionContentPartImage, ChatCompletionContentPartText } from "openai/resources";
 import { ImageURL } from "openai/resources/beta/threads/messages";
@@ -99,15 +99,24 @@ const promptList = new Map<string, string>([
   }
   
 
-  async function evaluateEssay(essay: string, rubric: Rubric[], question: string) {
+  async function evaluateEssay(essay: string, rubrics: Rubric[], question: string) {
     const prompt = await openai.beta.chat.completions.parse({
       model: 'gpt-4o',
       messages: [
+        {
+          role: 'system',
+          content: `You are a teacher grading an essay. The question is: "${question}". Using the Rubric Array as the reference, grade the essay of the student. This is the rubrics array: ${rubrics}. Each element in the array is a criteria required to achieve the highest points for the essay, you have to give a grade for every criteria based on the essay that is provided. Follow the RubricFormat for the grading wherein the "points" property is the amount of points the essay deserves for that criteria.`
+        },
+
+        {
+          role: 'user',
+          content: `${essay}`
+        }
       ],
-      response_format: zodResponseFormat(z.boolean(), 'valid_essay')
+      response_format: zodResponseFormat(RubricSchema, 'RubricFormat')
     });
 
     return prompt.choices[0].message.parsed;
   }
-  export { promptList, getPrompt, generateExam };
+  export { promptList, getPrompt, generateExam, evaluateEssay };
   

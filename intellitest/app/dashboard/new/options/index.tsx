@@ -13,7 +13,7 @@ import ExtractBase64Images from "@/utils/pdfUtil";
 
 import { generateExam } from "@/utils/promptList";
 
-import { extractImageBase64Values } from "@/utils/imageUtil";
+import { extractImageBase64Values, extractURIs } from "@/utils/imageUtil";
 
 import { ExamSchema } from "@/utils/types";
 import { z } from "zod";
@@ -77,7 +77,7 @@ export default function Index() {
           );
 
           exam.exam_name = examName;
-          
+
           console.log(exam);
           setExam(exam); // Set the exam directly
         } catch (error: any) {

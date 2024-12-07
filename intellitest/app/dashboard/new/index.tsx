@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DocumentItem } from "@/components/IntelliTest/Dashboard/document-item"; // Import ExamItem
 import { X } from "lucide-react-native";
 import { Document, ExamInputContent, fileTypes } from "@/utils/types";
-import { convertImageToBase64 } from "@/utils/imageUtil";
+import { convertImageToBase64, convertImageToBase64WithPrefix } from "@/utils/imageUtil";
 
 export default function Index() {
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function Index() {
           base64Value = imageAsset.base64; // Use existing base64 if available
         } else {
           // Call your function to convert the image to base64
-          base64Value = await convertImageToBase64(asset.uri); // Ensure this function is implemented correctly
+          base64Value = await convertImageToBase64WithPrefix(asset.uri, asset.mimeType); // Ensure this function is implemented correctly
         }
       }
     

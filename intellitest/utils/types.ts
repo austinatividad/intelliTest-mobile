@@ -32,6 +32,7 @@ export const MultipleChoiceOptionSchema = z.object({
 export const RubricSchema = z.object({
   criteria: z.string(),
   description: z.string(),
+  points: z.number()
 });
 
 export const QuestionSchema = z.object({

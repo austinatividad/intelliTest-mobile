@@ -15,14 +15,15 @@ import { generateExam } from "@/utils/promptList";
 
 import { extractImageBase64Values, extractURIs } from "@/utils/imageUtil";
 
-import { ExamSchema } from "@/utils/types";
+import { ExamSchema, AdditionalExamPromptOptions } from "@/utils/types";
 import { z } from "zod";
 
 export default function Index() {
   const router = useRouter();
   const { setLoading, setText } = useLoadingContext();
   const [examName, setExamName] = useState(""); // State to track exam name input
-  const [bucketName, setBucketName] = useState("");
+  const [gradeLevel, setGradeLevel] = useState("");
+  const [instructions, setInstructions] = useState("");
   const [shouldContinue, setShouldContinue] = useState(false);
 
   const [startExtraction, setStartExtraction] = useState(false); // Controls when extraction starts
@@ -66,7 +67,7 @@ export default function Index() {
   useEffect(() => {
     if (shouldContinue) {
       setText("Creating Exam...");
-  
+      let options: AdditionalExamPromptOptions = {gradeLevel: gradeLevel, additional_instructions: instructions}
       async function generateExamGPT() {
         console.log("Input Text");
         console.log(examInputContent.inputText);
@@ -189,7 +190,7 @@ export default function Index() {
       </Label>
       <Text className="pb-2 text-gray-500">adjusts difficulty based on your level</Text>
       <View className="pb-7">
-        <Input className="w-full" nativeID="gradeLevel" />
+        <Input className="w-full" nativeID="gradeLevel" onChangeText={setGradeLevel}/>
         
       </View>
 
@@ -199,7 +200,7 @@ export default function Index() {
       </Label>
       <Text className="pb-2 text-gray-500">how you want your test to be structured and answered</Text>
       <View className="pb-7">
-        <Textarea className="w-full" nativeID="additionalNotes" />
+        <Textarea className="w-full" nativeID="additionalNotes" onChangeText={setInstructions}/>
       </View>
       
     </View>

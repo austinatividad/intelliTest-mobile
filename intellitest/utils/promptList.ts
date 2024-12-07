@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { ExamSchema, RubricSchema } from "./types";
+import { AdditionalExamPromptOptions, ExamSchema, RubricSchema } from "./types";
 import { z } from "zod";
 import { ChatCompletionContentPartImage, ChatCompletionContentPartText } from "openai/resources";
 import { ImageURL } from "openai/resources/beta/threads/messages";
@@ -45,7 +45,7 @@ const promptList = new Map<string, string>([
   }
   
   //TODO: Add options...
-  async function generateExam(notes?: string, imageB64s?: string[]) : Promise<z.infer<typeof ExamSchema>> {
+  async function generateExam(notes?: string, imageB64s?: string[], options?: AdditionalExamPromptOptions) : Promise<z.infer<typeof ExamSchema>> {
 
       // Check if both notes and images are missing
       if (!notes && (!imageB64s || imageB64s.length === 0)) {
@@ -82,11 +82,12 @@ const promptList = new Map<string, string>([
       model: 'gpt-4o',
       messages: [
         {
-          role: "system", content: "You are a Departmental Mock Exam Generator. Generate the maximum amount of possible questions based on the following provided contents, with a minimum of 30 questions. The questions should be divided into three equal point-wise parts as follows: Knowledge (Multiple Choice), Process (Modified True or False - Multiple choice format, Options are set to \"Statement A is True\", \"Statement B is true\", \"Both Statements are True\", \"Both Statements are False\"), Understanding (Essay to test the ). For the Knowledge and Process Questions, provide the correct answer along with the list of choices. For the Understanding questions, provide a rubric that would guide the user on how they are graded. Follow the ExamFormat in generating the exam."
+          role: "system", content: "You are a Departmental Mock Exam Generator. Generate the maximum amount of possible questions based on the following provided contents, with a minimum of 30 questions. The questions should be divided into three equal point-wise parts as follows: Knowledge (Multiple Choice), Process (Modified True or False - Multiple choice format, Options are set to \"Statement A is True\", \"Statement B is true\", \"Both Statements are True\", \"Both Statements are False\"), Understanding (Essay to test the ). For the Knowledge and Process Questions, provide the correct answer along with the list of choices. For the Understanding questions, provide a rubric that would guide the user on how they are graded. The total points of all the points in the rubrics combined must be equivalent to the max points attainable for that question. Follow the ExamFormat in generating the exam. Use the options (if it is applicable) to modify the difficulty of the exam. Grade Level in the options pertains to the K-12 Philippine curriculum standard."
         },
         {
           role: "user", content: [
             {type: 'text', text:`${notesContent}`},
+            {type: `text`, text:`Options: ${options}`},
             ...imgUrlObjects
           ]
         }

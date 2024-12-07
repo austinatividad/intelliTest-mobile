@@ -22,6 +22,10 @@ export interface ExamInputContent {
     documents: Document[];
 }
 
+export interface AdditionalExamPromptOptions {
+  gradeLevel: string,
+  additional_instructions: string
+}
 export const QuestionTypeSchema = z.enum([QuestionType.ESSAY, QuestionType.MULTIPLE_CHOICE, QuestionType.IDENTIFICATION]);
 
 export const MultipleChoiceOptionSchema = z.object({

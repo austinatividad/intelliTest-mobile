@@ -8,6 +8,7 @@ import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
 import React, { useEffect, useState } from "react";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
 import {Search} from "lucide-react-native";
+import * as sq from "@/utils/supabaseQueries";
 
 
 import { dummy, ItemData } from "@/lib/dummy_data";
@@ -20,7 +21,8 @@ interface answer {
 
 export default function summaryPage() {
     const router = useRouter();
-    const { examID } = useLocalSearchParams();
+    const { examID: examIDParam } = useLocalSearchParams();
+    const examID = Array.isArray(examIDParam) ? examIDParam[0] : examIDParam;
     const { answers } = useLocalSearchParams();
     const [parsedAnswers, setParsedAnswers] = useState([]);
     const { setLoading, setText } = useLoadingContext();
@@ -44,11 +46,18 @@ export default function summaryPage() {
         }
     }, [answers]);
     
-    const onGradeMe = () => {
+    const onGradeMe = async () => {
         console.log("Grading...")
         setLoading(true);
         setText("Currently Grading your Test...")
-
+        const status = await sq.createAttempt(examID, parsedAnswers)
+        if (status) {
+            setLoading(false);
+            setText("");
+        } else {
+            setLoading(false);
+            setText("");
+        }
     }
     const currentExam = dummy[3];
 

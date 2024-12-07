@@ -7,6 +7,7 @@ import { decode } from 'base64-arraybuffer'
 import { convertImageToBase64 } from "./imageUtil";
 
 import { z } from 'zod';
+import { types } from "@babel/core";
 
 // exam details without the questions
 export interface ExamListItem {
@@ -86,7 +87,6 @@ export interface Answer {
     question_id: string; // Foreign key referencing the question ID
     answer: string | boolean; // The answer provided by the user
 }
-
 
 // Enum for Question Types
 export enum QuestionType {
@@ -332,3 +332,121 @@ const generateUUID = async (): Promise<string> => {
     }
   }
   
+  export async function createAttempt(exam_id: string, answers: Answer[]) {
+    try {
+      const session = await auth.getSession();
+      const id = session.data.session?.user.id;
+
+      // obtain the attempt number by querying the attempt_count of the number
+      console.log("STATUS: OBTAINING ATTEMPT NUMBER") 
+      const { data: attemptData, error: attemptDataError } = await supabase
+        .from('exam')
+        .select('attempt_count')
+        .eq('id', exam_id)
+        .single();
+
+      if (attemptDataError) {
+        console.error('Error fetching attempt count:', attemptDataError.message);
+        throw attemptDataError;
+      }
+      console.log("STATUS: OBTAINING ATTEMPT COUNT") 
+      const attemptCount: number = attemptData.attempt_count + 1;
+
+      var accumulatedScore = 0; // apppended per item
+
+      // to calculate the exam attempt, we first get the list of questions JOINED by the correct answer depending on their type of question. 
+      //currently, we only need the following types: multiple_choice and essay
+      console.log("STATUS: OBTAINING LIST OF QUESTIONS AND ANSWERS FROM THE EXAM")
+
+      const { data: QuestionListData, error: QuestionListDataError} = await supabase
+        .from('question')
+        .select(`
+          id, 
+          question, 
+          type,
+          points, 
+          multiple_choice:multiple_choice(id, option_text, is_correct), 
+          rubric:rubric(id, criteria, description)
+        `)
+        .eq('exam_id', exam_id);
+
+      if (QuestionListDataError) {
+        console.error('Error retrieving exam details')
+      }
+
+      console.log("DEBUG: DATA FORMAT-----")
+      console.log(QuestionListData)
+      console.log("STATUS: ANSWERS RETRIEVED; NOW GRADING WORK: ")
+
+      console.log("DEBUG: ANSWER FORMAT-----")
+      console.log(answers)
+
+      answers.forEach((answer) => {
+        const question = QuestionListData.find((q) => q.id === answer.question_id);
+        if (!question) return; // Skip if the question is not found
+
+        if (question.type === "multiple_choice") {
+          // **Multiple-Choice Grading**
+          const correctOption = question.multiple_choice.find((opt) => opt.is_correct);
+          if (correctOption && correctOption.option_text === answer.answer) {
+            accumulatedScore += question.points || 0; // Add points for correct answers
+            console.log(`Adding ${question.points} to the score!`)
+          }
+        } else if (question.type === "essay") {
+          //TODO: ADD GRADING PROMPT HERE! TEMP FOR NOW
+          accumulatedScore += 0;
+          console.log("Essay Question Temporary Here ------------")
+        }
+      });
+
+      console.log(`Final Score: ${accumulatedScore}`);
+
+      console.log("STATUS: INSERTING ATTEMPT")
+      const { data, error } = await supabase
+        .from('attempt')
+        .insert({
+          exam_id: exam_id,
+          user_id: id,
+          attempt_number: attemptCount,
+          score: accumulatedScore
+        }).select('id').single();
+
+      // update the attempt_count of the exam
+      const { error: updateError } = await supabase
+        .from('exam')
+        .update({ attempt_count: attemptCount })
+        .eq('id', exam_id);
+
+      if (updateError) {
+        console.error('Error updating attempt count:', updateError.message);
+        throw updateError;
+      }
+
+      // batch insert the answers
+      const attemptID = data?.id;
+
+      const answersToInsert = answers.map((answer) => ({
+        attempt_id: attemptID, // Reference to the attempt
+        question_id: answer.question_id,
+        answer: answer.answer,
+      }));
+
+      const {data: answerInsertData, error: answerInsertDataError} = await supabase
+        .from('question')
+        .insert(answersToInsert);
+
+      if(answerInsertDataError) {
+        console.error("Error inserting the questions: ", answerInsertDataError);
+        throw answerInsertDataError
+      }
+
+      console.log("Success Final")
+      console.log(answerInsertData)
+      
+      return true; // success
+    } catch (error: any) {
+      alert("Error uploading your attempt to the database")
+      console.error(error)
+      return false;
+    }
+  }

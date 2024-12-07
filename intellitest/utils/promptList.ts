@@ -2,10 +2,17 @@ import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 import { ExamSchema } from "./types";
 import { z } from "zod";
+import { ChatCompletionContentPartImage, ChatCompletionContentPartText } from "openai/resources";
+import { ImageURL } from "openai/resources/beta/threads/messages";
+import { Rubric } from "./supabaseQueries";
 const openai = new OpenAI({
   apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '', // Ensure your API key is stored securely
 });
 
+type ImageObject = {
+  type: string;
+  image_url: string;
+}
 
 const promptList = new Map<string, string>([
     // Prompts list
@@ -38,10 +45,10 @@ const promptList = new Map<string, string>([
   }
   
   //TODO: Add options...
-  async function generateExam(notes?: string, base64Images?: string[]) : Promise<z.infer<typeof ExamSchema>> {
+  async function generateExam(notes?: string, imageB64s?: string[]) : Promise<z.infer<typeof ExamSchema>> {
 
       // Check if both notes and images are missing
-      if (!notes && (!base64Images || base64Images.length === 0)) {
+      if (!notes && (!imageB64s || imageB64s.length === 0)) {
         throw new Error("Insufficient data: Both notes and images are missing. Provide at least one input.");
     }
 
@@ -53,14 +60,24 @@ const promptList = new Map<string, string>([
     //! FIX: This does not work; tried to make a test with images of physics equations, and it ended up making a quiz about base64 encoding
 
     let imageDescriptions = "";
-    if (base64Images && base64Images.length > 0) {
-        imageDescriptions = base64Images.map((base64, index) => {
-            return `Image ${index + 1}: This is a Base64-encoded image. Content:\n${base64.slice(0, 100)}...`;
-        }).join("\n");
-
-        imageDescriptions = `\n\nThe following images are also provided:\n${imageDescriptions}`;
+    let imgUrlObjects: ChatCompletionContentPartImage[] = [];
+    if (imageB64s && imageB64s.length > 0) {
+      imgUrlObjects = imageB64s.map((imageB64) => {
+          try {
+              const validatedUrl = new URL(imageB64); // Validates the URL format
+              return {
+                  type: 'image_url',
+                  image_url: { url: validatedUrl.href } // Wrap the validated URL as an object
+              };
+          } catch (error) {
+              console.error(`Invalid image URL: ${imageB64}`, error);
+              return null; // Skip invalid URLs
+          }
+      }).filter((obj): obj is ChatCompletionContentPartImage => obj !== null);
     }
 
+    console.info("Done parsing Image URLs")
+    // console.info(imgUrlObjects);
     const prompt = await openai.beta.chat.completions.parse({
       model: 'gpt-4o',
       messages: [
@@ -68,7 +85,10 @@ const promptList = new Map<string, string>([
           role: "system", content: "You are a Departmental Mock Exam Generator. Generate the maximum amount of possible questions based on the following provided contents, with a minimum of 30 questions. The questions should be divided into three equal point-wise parts as follows: Knowledge (Multiple Choice), Process (Modified True or False - Multiple choice format, Options are set to \"Statement A is True\", \"Statement B is true\", \"Both Statements are True\", \"Both Statements are False\"), Understanding (Essay to test the ). For the Knowledge and Process Questions, provide the correct answer along with the list of choices. For the Understanding questions, provide a rubric that would guide the user on how they are graded. Follow the ExamFormat in generating the exam."
         },
         {
-          role: "user", content: `${notesContent} ${imageDescriptions}`
+          role: "user", content: [
+            {type: 'text', text:`${notesContent}`},
+            ...imgUrlObjects
+          ]
         }
       ],
       response_format: zodResponseFormat(ExamSchema, 'ExamFormat')
@@ -78,5 +98,16 @@ const promptList = new Map<string, string>([
     return exam;
   }
   
+
+  async function evaluateEssay(essay: string, rubric: Rubric[], question: string) {
+    const prompt = await openai.beta.chat.completions.parse({
+      model: 'gpt-4o',
+      messages: [
+      ],
+      response_format: zodResponseFormat(z.boolean(), 'valid_essay')
+    });
+
+    return prompt.choices[0].message.parsed;
+  }
   export { promptList, getPrompt, generateExam };
   

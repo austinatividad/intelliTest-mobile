@@ -10,6 +10,7 @@ import { DocumentItem } from "@/components/IntelliTest/Dashboard/document-item";
 import { X } from "lucide-react-native";
 import { Document, ExamInputContent, fileTypes } from "@/utils/types";
 import { convertImageToBase64, convertImageToBase64WithPrefix } from "@/utils/imageUtil";
+import * as Clipboard from 'expo-clipboard';
 
 export default function Index() {
   const router = useRouter();
@@ -138,6 +139,9 @@ export default function Index() {
     }
   }
 
+  const handlePaste = async () => {
+    setInputText(await Clipboard.getStringAsync());
+  }
   // Filter out removed documents
   const visibleDocuments = documents.filter(doc => !doc.isRemoved);
 
@@ -167,7 +171,9 @@ export default function Index() {
         <Button variant="secondary" className="w-1/2" onPress={handleDocumentSelection}>
           <Text>Upload Documents</Text>
         </Button>
-
+        <Button variant="secondary" className="w-1/2 my-0.5" onPress={handlePaste}>
+          <Text>Paste Clipboard</Text>
+        </Button>
         <Button variant="secondary" className="w-1/2 my-0.5" onPress={handleCamera}>
           <Text>Camera</Text>
         </Button>

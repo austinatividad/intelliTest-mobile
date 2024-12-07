@@ -54,12 +54,18 @@ export default function summaryPage() {
         if (status) {
             setLoading(false);
             setText("");
+
+            router.replace({
+                pathname: "/dashboard/exam/" + examID + "/results",
+                params: {}
+            });
+
+
         } else {
             setLoading(false);
             setText("");
         }
     }
-    const currentExam = dummy[3];
 
     return (
         <ScrollView 

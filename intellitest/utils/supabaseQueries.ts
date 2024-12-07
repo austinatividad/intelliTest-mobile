@@ -433,11 +433,11 @@ const generateUUID = async (): Promise<string> => {
       }));
 
       const {data: answerInsertData, error: answerInsertDataError} = await supabase
-        .from('question')
+        .from('answer')
         .insert(answersToInsert);
 
       if(answerInsertDataError) {
-        console.error("Error inserting the questions: ", answerInsertDataError);
+        console.error("Error inserting the answers: ", answerInsertDataError);
         throw answerInsertDataError
       }
 

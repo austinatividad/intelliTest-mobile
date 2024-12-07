@@ -120,7 +120,7 @@ export default function Index() {
   useEffect(() => {
     if (examId) {
       setText("Redirecting to Exam...");
-      router.push({
+      router.replace({
           pathname: "/dashboard/exam",
           params: { examId: examId },
       });

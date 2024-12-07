@@ -2,12 +2,12 @@ import { supabase } from "@/lib/supabase";
 import * as auth from "@/utils/auth";
 import { err } from "react-native-svg";
 import * as Crypto from 'expo-crypto';
-import { Document, ExamSchema, MultipleChoiceOptionSchema, PartSchema, QuestionSchema, RubricSchema } from "./types";
+import { Document, ExamSchema, MultipleChoiceOptionSchema, PartSchema, QuestionSchema, RubricSchema, QuestionTypeSchema, QuestionType } from "./types";
 import { decode } from 'base64-arraybuffer'
 import { convertImageToBase64 } from "./imageUtil";
-
 import { z } from 'zod';
 import { types } from "@babel/core";
+import { evaluateEssay } from "./promptList";
 
 // exam details without the questions
 export interface ExamListItem {
@@ -71,6 +71,14 @@ export interface Rubric {
     points: number; // Points allocated to this rubric criteria
 }
 
+export interface EssayReview {
+    id: string;
+    user_id: string;
+    attempt_id: string;
+    rubric_id: string;
+    attained_score: number;
+    rubric_comment: string;
+}
 export interface Attempt {
     id: string; // Unique identifier for the attempt
     exam_id: string; // Foreign key referencing the exam ID
@@ -88,13 +96,6 @@ export interface Answer {
     answer: string | boolean; // The answer provided by the user
 }
 
-// Enum for Question Types
-export enum QuestionType {
-    MULTIPLE_CHOICE = "multiple_choice",
-    TRUE_FALSE = "true_false",
-    IDENTIFICATION = "identification",
-    ESSAY = "essay",
-}
 
 // Enum for Exam Status
 export enum ExamStatus {
@@ -381,8 +382,11 @@ const generateUUID = async (): Promise<string> => {
 
       console.log("DEBUG: ANSWER FORMAT-----")
       console.log(answers)
+      
+      var rubricsList: Rubric[] = [];
+      var result: any = [];
 
-      answers.forEach((answer) => {
+      for (const answer of answers) {
         const question = QuestionListData.find((q) => q.id === answer.question_id);
         if (!question) return; // Skip if the question is not found
 
@@ -394,11 +398,36 @@ const generateUUID = async (): Promise<string> => {
             console.log(`Adding ${question.points} to the score!`)
           }
         } else if (question.type === "essay") {
-          //TODO: ADD GRADING PROMPT HERE! TEMP FOR NOW
-          accumulatedScore += 0;
-          console.log("Essay Question Temporary Here ------------")
+          // get the rubrics of the question from supabase
+          const { data: rubricData, error: rubricError } = await supabase
+            .from('rubric')
+            .select('*')
+            .eq('question_id', question.id);
+
+          if (rubricError) {
+            console.error('Error fetching rubrics:', rubricError.message);
+            throw rubricError;
+          }
+
+          rubricsList.push(...(rubricData || []));
+          console.log("--------------RUBRICS DATA----------------");
+
+          console.log(question.question);
+          console.log(rubricsList);
+
+          if (typeof answer.answer === 'string') {
+            console.log(answer.answer)
+            for (const rubric of rubricsList) {
+                const evaluation = await evaluateEssay(answer.answer, [rubric], question.question) as { attained_score: number; rubric_comment: string; rubric_id?: string };
+                evaluation.rubric_id = rubric.id;
+                result.push(evaluation);
+              console.log(result);
+              accumulatedScore += evaluation.attained_score;
+            }
+          }
         }
-      });
+      }
+
 
       console.log(`Final Score: ${accumulatedScore}`);
 
@@ -412,10 +441,14 @@ const generateUUID = async (): Promise<string> => {
           score: accumulatedScore
         }).select('id').single();
 
-      // update the attempt_count of the exam
+      // update exam details
       const { error: updateError } = await supabase
         .from('exam')
-        .update({ attempt_count: attemptCount })
+        .update({
+          attempt_count: attemptCount,
+          status: "Completed",
+          score: accumulatedScore
+        })
         .eq('id', exam_id);
 
       if (updateError) {
@@ -432,19 +465,42 @@ const generateUUID = async (): Promise<string> => {
         answer: answer.answer,
       }));
 
-      const {data: answerInsertData, error: answerInsertDataError} = await supabase
-        .from('answer')
-        .insert(answersToInsert);
+      if (answersToInsert.length > 0) {
+        const {data: answerInsertData, error: answerInsertDataError} = await supabase
+          .from('answer')
+          .insert(answersToInsert);
 
-      if(answerInsertDataError) {
-        console.error("Error inserting the answers: ", answerInsertDataError);
-        throw answerInsertDataError
+        if (answerInsertDataError) {
+          console.error("Error inserting the answers: ", answerInsertDataError);
+          throw answerInsertDataError;
+        }
       }
 
-      console.log("Success Final")
-      console.log(answerInsertData)
-      
-      return true; // success
+
+      // Ensure that the result list is populated before uploading essayReview to the database
+      for (const res of result) {
+        console.log("DEBUG: RESULT----- UPLOADING...", "INDEX: ", result.indexOf(res), "RUBRIC ID: ", res.rubric_id);
+        console.log(res);
+        const { data: essayReviewData, error: essayReviewError } = await supabase
+          .from('essay_review')
+          .insert({
+        user_id: id,
+        attempt_id: attemptID,
+        rubric_id: res.rubric_id,
+        attained_score: res.attained_score,
+        rubric_comment: res.rubric_comment
+          });
+
+        if (essayReviewError) {
+          console.error('Error inserting essay review:', essayReviewError.message);
+          throw essayReviewError;
+        }
+
+        // Add a 2 second timeout per result
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
+      return true; 
     } catch (error: any) {
       alert("Error uploading your attempt to the database")
       console.error(error)

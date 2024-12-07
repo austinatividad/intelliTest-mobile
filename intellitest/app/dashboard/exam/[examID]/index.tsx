@@ -351,12 +351,14 @@ export default function QuestionPage() {
                         variant="secondary"
                         onPress={() =>
                             handleRubricPress(
-                                `${currentQuestion.rubric[0].criteria}\n\n${currentQuestion.rubric[0].description}`
+                                currentQuestion.rubric
+                                    .map((rubricItem) => `${rubricItem.criteria} (${rubricItem.points} pts) \n${rubricItem.description}`)
+                                    .join("\n\n\n")
                             )
                         }
                     >
-                <Text>Rubrics</Text>
-            </Button>
+                        <Text>Rubrics</Text>    
+                    </Button>
         </View>
     </>
 )}

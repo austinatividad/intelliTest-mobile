@@ -1,4 +1,3 @@
-import { QuestionType } from './supabaseQueries';
 import { z } from 'zod';
 
 export enum fileTypes {
@@ -15,6 +14,15 @@ export interface Document {
     isRemoved: boolean;
     base64? : string | null;
 }
+
+// Enum for Question Types
+export enum QuestionType {
+  MULTIPLE_CHOICE = "multiple_choice",
+  TRUE_FALSE = "true_false",
+  IDENTIFICATION = "identification",
+  ESSAY = "essay",
+}
+
 
 // the interface for the exam input content, will be used to store the content of the exam input and pass it to the next page
 export interface ExamInputContent {
@@ -38,6 +46,11 @@ export const RubricSchema = z.object({
   description: z.string(),
   points: z.number()
 });
+
+export const EssayReviewSchema = z.object({
+  attained_score: z.number(),
+  rubric_comment: z.string(),
+})
 
 export const QuestionSchema = z.object({
   question: z.string(),

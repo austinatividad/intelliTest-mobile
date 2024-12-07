@@ -1,10 +1,10 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { AdditionalExamPromptOptions, ExamSchema, RubricSchema } from "./types";
+import { AdditionalExamPromptOptions, EssayReviewSchema, ExamSchema, RubricSchema } from "./types";
 import { z } from "zod";
 import { ChatCompletionContentPartImage, ChatCompletionContentPartText } from "openai/resources";
 import { ImageURL } from "openai/resources/beta/threads/messages";
-import { Rubric } from "./supabaseQueries";
+import { Rubric, EssayReview } from './supabaseQueries';
 const openai = new OpenAI({
   apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY || '', // Ensure your API key is stored securely
 });
@@ -56,8 +56,6 @@ const promptList = new Map<string, string>([
     const notesContent = notes ? `The notes are: ${notes}` : "No textual notes provided.";
     let includedOptions = "";
     // Process images if provided
-
-    //! FIX: This does not work; tried to make a test with images of physics equations, and it ended up making a quiz about base64 encoding
 
     let imageDescriptions = "";
     let imgUrlObjects: ChatCompletionContentPartImage[] = [];
@@ -119,7 +117,7 @@ const promptList = new Map<string, string>([
       messages: [
         {
           role: 'system',
-          content: `You are a teacher grading an essay. The question is: "${question}". Using the Rubric Array as the reference, grade the essay of the student. This is the rubrics array: ${rubrics}. Each element in the array is a criteria required to achieve the highest points for the essay, you have to give a grade for every criteria based on the essay that is provided. Follow the RubricFormat for the grading wherein the "points" property is the amount of points the essay deserves for that criteria.`
+          content: `You are a very polite and understanding teacher grading an essay. Maximum 20 words. Do not be too strict. Give points for effort, and words of encouragement. Only allow integer for attributed_score. The question is: "${question}". Using the Rubric Array as the reference, grade the essay of the student. This is the rubrics array: ${JSON.stringify(rubrics)}. Each element in the array is a criteria required to achieve the highest points for the essay, you have to give a grade for every criteria based on the essay that is provided. Follow the RubricFormat for the grading wherein the "points" property is the amount of points the essay deserves for that criteria.`
         },
 
         {
@@ -127,10 +125,10 @@ const promptList = new Map<string, string>([
           content: `${essay}`
         }
       ],
-      response_format: zodResponseFormat(RubricSchema, 'RubricFormat')
+      response_format: zodResponseFormat(EssayReviewSchema, 'EssayReviewFormat')
     });
-
-    return prompt.choices[0].message.parsed;
+    const review = EssayReviewSchema.parse(prompt.choices[0].message.parsed);
+    return review;
   }
   export { promptList, getPrompt, generateExam, evaluateEssay };
   

@@ -109,7 +109,7 @@ const LoadingSpinner = () => {
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject, // Fill the entire screen
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(255, 255, 255, 1)",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1000,

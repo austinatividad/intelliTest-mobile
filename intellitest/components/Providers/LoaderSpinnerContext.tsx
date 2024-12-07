@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { StyleSheet, View } from 'react-native';
 
 interface LoadingContextType {
   loading: boolean;
@@ -24,10 +25,27 @@ interface LoadingProviderProps {
 export const LoadingProvider = ({ children }: LoadingProviderProps) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
+  // useEffect(() => {
+  //   if (!loading) {
+  //     setText("");
+  //   }
+  // }, [loading]);
 
   return (
-    <LoadingContext.Provider value={{ loading, setLoading, text, setText }}>
-      {children}
-    </LoadingContext.Provider>
+    <View style={styles.container}>
+      <LoadingContext.Provider value={{ loading, setLoading, text, setText }}>
+        {children}
+      </LoadingContext.Provider>
+    </View>
+
+    
+
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, // Fills the entire screen
+    backgroundColor: "white", // Sets the background to white
+  },
+});

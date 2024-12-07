@@ -7,6 +7,7 @@ import { dummy } from "@/lib/dummy_data";
 import ExplanationModal from "@/components/explanationModal";
 import FeedbackModal from "@/components/ui/feedbackModal";
 import { BackHandler } from "react-native";
+import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 
 export default function summaryPage() {
     const router = useRouter();
@@ -15,6 +16,9 @@ export default function summaryPage() {
     const [feedbackVisible, setFeedbackVisible] = useState(false);
     const [explanationText, setExplanationText] = useState("");
     const [feedbackText, setFeedbackText] = useState("");
+    const { setLoading, setText } = useLoadingContext();
+    const [results, setResults] = useState();
+    const sleep = ms => new Promise(r => setTimeout(r, ms))
 
     useEffect(() => {
         const backAction = () => {
@@ -32,7 +36,21 @@ export default function summaryPage() {
         return () => backHandler.remove();
     }, []);
     
+    useEffect(() => {
 
+        const TestTimeout = async () => {
+            await sleep(2000);
+
+        }
+        setLoading(true);
+        setText("Gathering Results... 😊");
+        TestTimeout();
+        /*
+            DB CALL HERE
+        */
+        setLoading(false);
+
+    });
     // Function to retake the exam, redirects to the first question
     const handleRetakeButton = () => {
         router.navigate({

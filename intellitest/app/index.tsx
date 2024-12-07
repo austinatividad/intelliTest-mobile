@@ -6,27 +6,26 @@ import React from "react";
 import { useRouter } from "expo-router";
 import { getSession } from "@/utils/auth";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 
 export default function Index() {
   const router = useRouter();
-  const [loading, setLoading] = React.useState(true);
+  const { setLoading, setText } = useLoadingContext();
+
 
   React.useEffect(() => {
+    // setLoading(true);
+    // setText(`Welcome! Please be patient while we prepare things for you! 😊`);
     async function checkSession() {
       const session = await getSession();
+      setLoading(false)
       if (session.data.session != null) {
         router.replace("/dashboard");
-      } else {
-        setLoading(false); // Stop loading if no session
       }
     }
     checkSession();
     
   }, [router]);
-
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <View

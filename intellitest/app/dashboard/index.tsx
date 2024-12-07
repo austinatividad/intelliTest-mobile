@@ -66,20 +66,35 @@ export default function Index() {
 
   //get the current session, print details
   React.useEffect(() => {
+    
     async function checkSession() {
+      setLoading(true);
+      setText(`Hello! Please be patient while we prepare 😊`);
       const session = await getSession();
       if (!session.data) {
         router.navigate("/");
       } else {
+        
         // get the profile details
         const profile = await getProfile(session.data.session?.user.email || '');
         console.log(profile.data);
         setProfile(profile.data);
       }
+
+      // setLoading(false);
     }
     checkSession();
   }, [router]);
 
+  React.useEffect(() => {
+    if(profile == null) {
+      setLoading(true);
+      setText(`Hello! Please be patient while we prepare 😊`);
+    } else {
+      setLoading(false);
+    }
+
+  }, [profile])
   // const [firstName, setFirstName] = React.useState("");
 
   //debug - openaiClient and promptList
@@ -129,25 +144,28 @@ export default function Index() {
 
   return (
     <View style={{ flex: 1 }}>
-      <View className="px-10 pt-36 text-center items-center bg-green-400 mb-20">
-        <Text className="text-3xl font-bold text-white">Hi, {profile?.username}! 👋</Text>
-        <Text className="text-2xl text-white">Let's get ready for our next test!</Text>
-        <View style={{ transform: [{ translateY: 50 }] }}>
-          <GenerateButton />  
-        </View>
-        
-      </View>
-
-
-      <SectionList
-        className="w-full p-4 "
-        sections={sections}
-        keyExtractor={(item, index) => item.id + index}
-        renderSectionHeader={({ section }) => (
-          <Text className="pt-4 font-bold text-xl mb-4">{section.title}</Text>
-        )}
-        contentContainerStyle={{ paddingBottom: 56 }}
-      />
+      {profile && (
+        <>
+          <View className="px-10 pt-36 text-center items-center bg-green-400 mb-20">
+            <Text className="text-3xl font-bold text-white">Hi, {profile.username}! 👋</Text>
+            <Text className="text-2xl text-white">Let's get ready for our next test!</Text>
+            <View style={{ transform: [{ translateY: 50 }] }}>
+              <GenerateButton />
+            </View>
+          </View>
+  
+          <SectionList
+            className="w-full p-4"
+            sections={sections}
+            keyExtractor={(item, index) => item.id + index}
+            renderSectionHeader={({ section }) => (
+              <Text className="pt-4 font-bold text-xl mb-4">{section.title}</Text>
+            )}
+            contentContainerStyle={{ paddingBottom: 56 }}
+          />
+        </>
+      )}
     </View>
   );
+  
 }

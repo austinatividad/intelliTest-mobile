@@ -37,11 +37,17 @@ export default function summaryPage() {
         // Parse the answers JSON string
         if (answers) {
             try {
+
+                setLoading(true);
+                setText("Hold on, we're gathering your answers...");
+                
                 const parsed = JSON.parse(answers);
                 setParsedAnswers(parsed);
                 console.log("Parsed Answers:", parsed);
             } catch (error) {
                 console.error("Error parsing answers:", error);
+            } finally {
+                setLoading(false);
             }
         }
     }, [answers]);

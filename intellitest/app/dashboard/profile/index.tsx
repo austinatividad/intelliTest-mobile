@@ -23,7 +23,7 @@ import { dummy, ItemData } from "@/lib/dummy_data";
 
 export default function Index() {
   const router = useRouter();
-  const { setLoading } = useLoadingContext();
+  const { setLoading, setText } = useLoadingContext();
   const [isDisabled, setIsDisabled] = React.useState(false);
   // Create a reference to the animated value
   const rotateAnim = React.useRef(new Animated.Value(0)).current;
@@ -34,6 +34,7 @@ export default function Index() {
   React.useEffect(() => {
     async function checkSession() {
       setLoading(true); 
+      setText("Getting your profile details, please be patient 😊");
       const session = await getSession();
       if (!session.data) {
         router.navigate("/");

@@ -11,7 +11,7 @@ import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
 
 export default function Index() {
   const router = useRouter();
-  const { setLoading } = useLoadingContext();
+  const { setLoading, setText } = useLoadingContext();
   const [searchText, setSearchText] = React.useState("");
   const [selectedId, setSelectedId] = React.useState<string>();
   const [exams, setExams] = React.useState<sq.ExamListItem[] | null>(null);
@@ -22,7 +22,7 @@ export default function Index() {
   const fetchExams = async () => {
     setLoadingError(false);
     setLoading(true);
-
+    setText('Fetching Exams 😊');
     const timeout = setTimeout(() => {
       setLoading(false);
       setLoadingError(true); // Set error if request times out

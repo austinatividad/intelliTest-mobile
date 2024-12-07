@@ -68,13 +68,15 @@ export default function Index() {
     if (shouldContinue) {
       setText("Creating Exam...");
       let options: AdditionalExamPromptOptions = {gradeLevel: gradeLevel, additional_instructions: instructions}
+      console.info(options);
       async function generateExamGPT() {
-        console.log("Input Text");
-        console.log(examInputContent.inputText);
+        // console.log("Input Text");
+        // console.log(examInputContent.inputText);
         try {
           const exam = await generateExam(
             examInputContent.inputText,
-            extractImageBase64Values(imageDocuments)
+            extractImageBase64Values(imageDocuments),
+            options
           );
 
           exam.exam_name = examName;
@@ -121,7 +123,7 @@ export default function Index() {
   useEffect(() => {
     if (examId) {
       setText("Redirecting to Exam...");
-      router.replace({
+      router.push({
           pathname: "/dashboard/exam",
           params: { examId: examId },
       });

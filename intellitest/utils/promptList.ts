@@ -54,7 +54,7 @@ const promptList = new Map<string, string>([
 
     // Process notes if provided
     const notesContent = notes ? `The notes are: ${notes}` : "No textual notes provided.";
-
+    let includedOptions = "";
     // Process images if provided
 
     //! FIX: This does not work; tried to make a test with images of physics equations, and it ended up making a quiz about base64 encoding
@@ -77,7 +77,20 @@ const promptList = new Map<string, string>([
     }
 
     console.info("Done parsing Image URLs")
-    // console.info(imgUrlObjects);
+    console.info(`Options: ${options}`)
+    if (options) {
+      includedOptions += "Options: [\n"
+      if (options.additional_instructions != "") {
+        includedOptions += "Additional Instructions: " + options.additional_instructions + "\n";
+      }
+      if (options.gradeLevel != "") {
+        includedOptions += "Grade Level: " + options.gradeLevel + "\n";
+      }
+
+      includedOptions += "]\n"
+    }
+
+    console.info(includedOptions);
     const prompt = await openai.beta.chat.completions.parse({
       model: 'gpt-4o',
       messages: [
@@ -86,8 +99,8 @@ const promptList = new Map<string, string>([
         },
         {
           role: "user", content: [
-            {type: 'text', text:`${notesContent}`},
-            {type: `text`, text:`Options: ${options}`},
+            {type: `text`, text:includedOptions},
+            {type: 'text', text:`Notes: ${notesContent}`},
             ...imgUrlObjects
           ]
         }

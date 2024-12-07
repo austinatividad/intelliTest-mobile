@@ -222,6 +222,7 @@ const generateUUID = async (): Promise<string> => {
       question_id: questionId,
       criteria: rubric.criteria,
       description: rubric.description,
+      points: rubric.points
     }));
   
     const { error } = await supabase.from('rubric').insert(formattedRubrics);

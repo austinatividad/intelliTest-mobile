@@ -413,7 +413,11 @@ const generateUUID = async (): Promise<string> => {
             const evaluation = await evaluateEssay(answer.answer, rubricData, question.question);
             console.log("EVALUATION RESULT: ");
             console.log(JSON.stringify(evaluation, null, 2));
-            evaluation.reviews.forEach((review: any) => result.push(review));
+            evaluation.reviews.forEach((review: any) => {
+              result.push(review);
+              // Add the attained score to the accumulated score
+              accumulatedScore += review.attained_score;
+            });
           }
         }
       }

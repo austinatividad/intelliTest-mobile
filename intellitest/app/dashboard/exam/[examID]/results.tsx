@@ -24,7 +24,7 @@ export default function summaryPage() {
 
     useEffect(() => {
         const backAction = () => {
-            router.navigate({
+            router.replace({
                 pathname: `/dashboard/exams`,
             });
             return true;

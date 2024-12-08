@@ -151,7 +151,7 @@ export default function Index() {
   return (
     <>
     <ScrollView style={{ flex: 1 }}>
-      <View className="p-4 pt-12">
+      <View className="p-4 pt-12 pb-20">
         <Text className="text-3xl font-bold">Generate a Mock Test</Text>
 
         <Text className="flex w-full justify-left text-left pb-2 text-xl">

@@ -69,22 +69,12 @@ export default function Index() {
     outputRange: ['0deg', '360deg'], // Full rotation
   });
 
-  const onLogOut = (): void => {
+  const onLogOut = async (): Promise<void> => {
     setIsDisabled(true);
-    startRotation();
-
-    console.log("Log Out");
-    //TODO: Add log out logic
-      // Add your logic for the button action here (e.g., logging out)
-      
-      setTimeout(() => {
-        rotateAnim.stopAnimation();
-        setIsDisabled(false); // Reset the button after action (for example, after a log out request)
-        signOut();
-        router.replace("/");
-        
-
-      }, 2000);  // Simulating a 2-second delay for demonstration
+    setLoading(true);
+    setText("Logging out, please wait 😊");
+    await signOut();
+    router.replace("/");
   };
   return (
     <View

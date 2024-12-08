@@ -376,16 +376,11 @@ const generateUUID = async (): Promise<string> => {
         console.error('Error retrieving exam details')
       }
 
-      console.log("DEBUG: DATA FORMAT-----")
-      console.log(QuestionListData)
-      console.log("STATUS: ANSWERS RETRIEVED; NOW GRADING WORK: ")
-
-      console.log("DEBUG: ANSWER FORMAT-----")
-      console.log(answers)
       
       var rubricsList: Rubric[] = [];
       var result: any = [];
 
+      console.log("STATUS: GRADING ANSWERS")
       for (const answer of answers) {
         const question = QuestionListData.find((q) => q.id === answer.question_id);
         if (!question) return; // Skip if the question is not found
@@ -395,9 +390,9 @@ const generateUUID = async (): Promise<string> => {
           const correctOption = question.multiple_choice.find((opt) => opt.is_correct);
           if (correctOption && correctOption.option_text === answer.answer) {
             accumulatedScore += question.points || 0; // Add points for correct answers
-            console.log(`Adding ${question.points} to the score!`)
           }
         } else if (question.type === "essay") {
+          console.log("STATUS: GRADING ESSAY")
           // get the rubrics of the question from supabase
           const { data: rubricData, error: rubricError } = await supabase
             .from('rubric')
@@ -410,18 +405,14 @@ const generateUUID = async (): Promise<string> => {
           }
 
           rubricsList.push(...(rubricData || []));
-          console.log("--------------RUBRICS DATA----------------");
 
-          console.log(question.question);
-          console.log(rubricsList);
-
+          console.log("STATUS: EVALUATING ESSAY, THIS MAY TAKE A WHILE")
+          //TODO: REPLACE THIS WITH A BATCH EVALUATION!
           if (typeof answer.answer === 'string') {
-            console.log(answer.answer)
             for (const rubric of rubricsList) {
                 const evaluation = await evaluateEssay(answer.answer, [rubric], question.question) as { attained_score: number; rubric_comment: string; rubric_id?: string };
                 evaluation.rubric_id = rubric.id;
                 result.push(evaluation);
-              console.log(result);
               accumulatedScore += evaluation.attained_score;
             }
           }
@@ -458,7 +449,7 @@ const generateUUID = async (): Promise<string> => {
 
       // batch insert the answers
       const attemptID = data?.id;
-
+      console.log("STATUS: INSERTING ANSWERS")
       const answersToInsert = answers.map((answer) => ({
         attempt_id: attemptID, // Reference to the attempt
         question_id: answer.question_id,
@@ -479,8 +470,6 @@ const generateUUID = async (): Promise<string> => {
 
       // Ensure that the result list is populated before uploading essayReview to the database
       for (const res of result) {
-        console.log("DEBUG: RESULT----- UPLOADING...", "INDEX: ", result.indexOf(res), "RUBRIC ID: ", res.rubric_id);
-        console.log(res);
         const { data: essayReviewData, error: essayReviewError } = await supabase
           .from('essay_review')
           .insert({
@@ -495,15 +484,48 @@ const generateUUID = async (): Promise<string> => {
           console.error('Error inserting essay review:', essayReviewError.message);
           throw essayReviewError;
         }
-
-        // Add a 2 second timeout per result
-        await new Promise(resolve => setTimeout(resolve, 2000));
       }
 
-      return true; 
+      return attemptID;
     } catch (error: any) {
       alert("Error uploading your attempt to the database")
       console.error(error)
       return false;
     }
   }
+
+  export async function getAttempt(attemptID: string, examID: string) {
+    // obtains the attempt for the exam id, and then joined by the question and answers of the attempt.
+    const { data, error } = await supabase
+      .from('attempt')
+      .select(`
+        *,
+        answer(*, question(*, multiple_choice(*), rubric(*))), essay_review(*), exam(total_score)
+      `)
+      .eq('id', attemptID)
+      .eq('exam_id', examID)
+      .single();
+
+    if (error) {
+      console.error('Error getting attempt:', error.message);
+      return;
+    }
+
+    return data;
+  }
+
+  export async function getLatestAttemptID(examID: string) {
+    const { data, error } = await supabase
+        .from('attempt')
+        .select('id')
+        .eq('exam_id', examID) 
+        .order('attempt_number', { ascending: false })
+        .limit(1);
+
+    if (error) {
+        console.error("Error fetching latest attempt:", error);
+        return null;
+    }
+
+    return data[0]; // Return the first (latest) attempt
+};

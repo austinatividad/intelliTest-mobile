@@ -49,6 +49,17 @@ export default function Index() {
 
     })
   }
+
+  const handleAttemptView = async () => {
+    console.log("Pressed")
+
+    const attemptID = await sq.getLatestAttemptID(examId)
+    
+    router.navigate({
+      pathname: "/dashboard/exam/" + examId + "/results",
+      params: {attemptID: attemptID.id}
+    })
+  }
   return (
     <View
       style={{
@@ -86,6 +97,11 @@ export default function Index() {
             <Text className="text-xl font-semi-bold text-gray-500 mb-4">Attempt {exam?.attempt_count}</Text>
             {/* Score */}
             <Text className="text-xl text-center font-semi-bold text-gray-500 mb-4">You scored {exam?.score ?? 0} out of {exam?.total_score ?? 0} points</Text>
+
+            {/* view attempt button */}
+            <Button variant="outline" className="mb-4" onPress={handleAttemptView}>
+              <Text>View Latest Attempt</Text>
+            </Button>
           </View>
         )}
          

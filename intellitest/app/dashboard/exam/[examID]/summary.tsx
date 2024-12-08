@@ -63,10 +63,8 @@ export default function summaryPage() {
 
             router.replace({
                 pathname: "/dashboard/exam/" + examID + "/results",
-                params: {}
+                params: {attemptID: status}
             });
-
-
         } else {
             setLoading(false);
             setText("");

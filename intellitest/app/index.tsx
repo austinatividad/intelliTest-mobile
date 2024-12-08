@@ -22,7 +22,7 @@ export default function Index() {
       setText(``);
       const session = await getSession();
       if (session.data.session != null) {
-        router.replace("/dashboard");
+        router.push("/dashboard");
       }
       console.log("Session checked");
       setSessionChecked(true);

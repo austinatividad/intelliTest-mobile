@@ -535,11 +535,12 @@ const generateUUID = async (): Promise<string> => {
     return data[0]; // Return the first (latest) attempt
 };
 
-  export async function getLatestExams() {
+  export async function getLatestExams(userID: string) {
     const { data, error } = await supabase
       .from('exam')
       .select('id, exam_name, exam_description, status, score, total_score')
       .order('created_at', { ascending: false })
+      .eq('user_id', userID)
       .limit(3);
 
     if (error) {

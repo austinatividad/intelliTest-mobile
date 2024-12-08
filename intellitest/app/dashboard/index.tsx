@@ -2,7 +2,7 @@ import { View, SectionList } from "react-native";
 import { Text } from "@/components/ui/text";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import React from "react";
 import { NotebookText } from "lucide-react-native";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item"; // Import ExamItem component
@@ -24,6 +24,7 @@ type Profile = {
   username: string;
   profile_pic_path: string;
   email: string;
+  id: string;
 }
 
 
@@ -40,7 +41,7 @@ export default function Index() {
 
   //supabase query for getting latest exams
   const getExams = async () => {
-    const exams = await sq.getLatestExams();
+    const exams = await sq.getLatestExams(profile.id);
     console.log(JSON.stringify(exams, null ,2));
     if (exams) {
       setExams(exams);
@@ -48,9 +49,12 @@ export default function Index() {
   }
 
   //get the latest exams
-  React.useEffect(() => {
-    getExams();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+        setExams([]);
+        getExams();
+    }, [])
+  );
 
   //get suggestion for new exam
   React.useEffect(() => {
@@ -140,11 +144,11 @@ export default function Index() {
                 onPress={handleExamPress} // Pass the handler directly
                 />
               ))}
-                <Text className="text-xl font-bold text-black pb-2">
-                {exams.length > 0 ? "You might like:" : "Hello, new intelliTester! Here's a cool suggestion to get you started :)"}
-                </Text>
               </>
             )}
+            <Text className="text-xl font-bold text-black pb-2">
+                {exams.length > 0 ? "You might like:" : "Hello, new intelliTester!\nHere's a cool suggestion to get you started!"}
+                </Text>
             <ExamItem
               id="1"
               examName={suggestionTitle}

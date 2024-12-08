@@ -114,8 +114,6 @@ export async function getExams() {
         .select('*')
         .eq('user_id', id)
         .order('created_at', { ascending: false });
-    console.log("finished getting exams");
-    console.log(data);
     if (error) {
         console.error('Error getting exams:', error.message);
         return;

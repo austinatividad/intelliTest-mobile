@@ -42,7 +42,6 @@ export default function Index() {
   //supabase query for getting latest exams
   const getExams = async () => {
     const exams = await sq.getLatestExams(profile.id);
-    console.log(JSON.stringify(exams, null ,2));
     if (exams) {
       setExams(exams);
     }
@@ -62,7 +61,6 @@ export default function Index() {
       if (!isCalled) {
         setIsCalled(true);
         const suggestion = await suggestNewExam(exams);
-        console.log(suggestion);
         setSuggestionTitle(suggestion.suggestion_title);
         setSuggestionContent(suggestion.suggestion_content);
       }
@@ -84,7 +82,6 @@ export default function Index() {
         
         // get the profile details
         const profile = await getProfile(session.data.session?.user.email || '');
-        console.log(profile.data);
         setProfile(profile.data);
       }
 

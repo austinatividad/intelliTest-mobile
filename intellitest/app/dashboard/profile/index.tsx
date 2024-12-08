@@ -42,7 +42,6 @@ export default function Index() {
         // get the profile details
         const profile = await getProfile(session.data.session?.user.email || '');
         setProfile(profile.data);
-        console.log(profile.data);
         setLoading(false);
       }
     }

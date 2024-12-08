@@ -22,7 +22,7 @@ export default function Index() {
     async function checkSession() {
       const session = await getSession();
       if (session.data.session != null) {
-        router.push("/dashboard");
+        router.replace("/dashboard");
       } else {
         setLoading(false); // Only stop loading if no session
       }

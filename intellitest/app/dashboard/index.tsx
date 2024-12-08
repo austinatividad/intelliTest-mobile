@@ -41,9 +41,11 @@ export default function Index() {
 
   //supabase query for getting latest exams
   const getExams = async () => {
-    const exams = await sq.getLatestExams(profile.id);
-    if (exams) {
-      setExams(exams);
+    if (profile) {
+      const exams = await sq.getLatestExams(profile.id);
+      if (exams) {
+        setExams(exams);
+      }
     }
   }
 
@@ -71,24 +73,42 @@ export default function Index() {
 
   //get the current session, print details
   React.useEffect(() => {
-    
-    async function checkSession() {
+    async function initialize() {
       setLoading(true);
       setText(`Hello! Please be patient while we prepare 😊`);
+      
+      // Fetch session
       const session = await getSession();
       if (!session.data) {
         router.navigate("/");
-      } else {
-        
-        // get the profile details
-        const profile = await getProfile(session.data.session?.user.email || '');
-        setProfile(profile.data);
+        return;
       }
-
-      // setLoading(false);
+  
+      // Fetch profile
+      const profileData = await getProfile(session.data.session?.user.email || "");
+      if (profileData.data) {
+        setProfile(profileData.data);
+      }
+  
+      setLoading(false);
     }
-    checkSession();
+  
+    initialize();
   }, [router]);
+  
+  React.useEffect(() => {
+    async function fetchExams() {
+      if (profile) {
+        setExams([]); // Clear exams before fetching new ones
+        const exams = await sq.getLatestExams(profile.id);
+        if (exams) {
+          setExams(exams);
+        }
+      }
+    }
+  
+    fetchExams();
+  }, [profile]); // Fetch exams only when `profile` is set
 
   React.useEffect(() => {
     if(profile == null) {

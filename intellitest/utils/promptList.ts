@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { AdditionalExamPromptOptions, EssayReviewSchema, ExamSchema, RubricSchema } from "./types";
+import { AdditionalExamPromptOptions, EssayReviewSchema, ExamSchema, RubricSchema, EssayReviewSchemaList } from "./types";
 import { z } from "zod";
 import { ChatCompletionContentPartImage, ChatCompletionContentPartText } from "openai/resources";
 import { ImageURL } from "openai/resources/beta/threads/messages";
@@ -90,7 +90,7 @@ const promptList = new Map<string, string>([
 
     console.info(includedOptions);
     const prompt = await openai.beta.chat.completions.parse({
-      model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: "system", content: "You are a Departmental Mock Exam Generator. Generate the maximum amount of possible questions based on the following provided contents, with a minimum of 30 questions. The questions should be divided into three equal point-wise parts as follows: Knowledge (Multiple Choice), Process (Modified True or False - Multiple choice format, Options are set to \"Statement A is True\", \"Statement B is true\", \"Both Statements are True\", \"Both Statements are False\"), Understanding (Essay to test the ). For the Knowledge and Process Questions, provide the correct answer along with the list of choices. For the Understanding questions, provide a rubric that would guide the user on how they are graded. The total points of all the points in the rubrics combined must be equivalent to the max points attainable for that question. Follow the ExamFormat in generating the exam. Use the options (if it is applicable) to modify the difficulty of the exam. Grade Level in the options pertains to the K-12 Philippine curriculum standard."
@@ -128,11 +128,11 @@ const promptList = new Map<string, string>([
 
   async function evaluateEssay(essay: string, rubrics: Rubric[], question: string) {
     const prompt = await openai.beta.chat.completions.parse({
-      model: 'gpt-4o',
+      model: 'gpt-4o-mini',
       messages: [
         {
           role: 'system',
-          content: `You are a very polite and understanding teacher grading an essay. Maximum 20 words. Do not be too strict. Give points for effort, when the student at least tries. Only allow integer for attributed_score. The question is: "${question}". Using the Rubric Array as the reference, grade the essay of the student. This is the rubrics array: ${JSON.stringify(rubrics)}. Each element in the array is a criteria required to achieve the highest points for the essay, you have to give a grade for every criteria based on the essay that is provided. Follow the RubricFormat for the grading wherein the "points" property is the amount of points the essay deserves for that criteria.`
+          content: `You are a very polite and understanding teacher grading an essay. Maximum 20 words. Do not be too strict. Give points for effort, when the student at least tries. Only allow integer for attributed_score. The question is: "${question}". Using the Rubric Array as the reference, grade the essay of the student. This is the rubrics array: ${JSON.stringify(rubrics)}. Each element in the array has a criteria required to achieve the highest points for the essay; provide a grade for every criteria based on the essay that is provided. Follow the format for the grading wherein the "attained_score" property is the amount of points the essay deserves for each criteria. Include the corresponding rubric_id for each criteria.`
         },
 
         {
@@ -140,9 +140,9 @@ const promptList = new Map<string, string>([
           content: `${essay}`
         }
       ],
-      response_format: zodResponseFormat(EssayReviewSchema, 'EssayReviewFormat')
+      response_format: zodResponseFormat(EssayReviewSchemaList, 'EssayReviewSchemaFormat')
     });
-    const review = EssayReviewSchema.parse(prompt.choices[0].message.parsed);
+    const review = EssayReviewSchemaList.parse(prompt.choices[0].message.parsed);
     return review;
   }
   export { promptList, getPrompt, generateExam, evaluateEssay };

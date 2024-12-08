@@ -407,14 +407,13 @@ const generateUUID = async (): Promise<string> => {
           rubricsList.push(...(rubricData || []));
 
           console.log("STATUS: EVALUATING ESSAY, THIS MAY TAKE A WHILE")
-          //TODO: REPLACE THIS WITH A BATCH EVALUATION!
           if (typeof answer.answer === 'string') {
-            for (const rubric of rubricsList) {
-                const evaluation = await evaluateEssay(answer.answer, [rubric], question.question) as { attained_score: number; rubric_comment: string; rubric_id?: string };
-                evaluation.rubric_id = rubric.id;
-                result.push(evaluation);
-              accumulatedScore += evaluation.attained_score;
-            }
+            console.log("Rubric List:")
+            console.log(JSON.stringify(rubricsList, null, 2));
+            const evaluation = await evaluateEssay(answer.answer, rubricData, question.question);
+            console.log("EVALUATION RESULT: ");
+            console.log(JSON.stringify(evaluation, null, 2));
+            evaluation.reviews.forEach((review: any) => result.push(review));
           }
         }
       }
@@ -470,6 +469,8 @@ const generateUUID = async (): Promise<string> => {
 
       // Ensure that the result list is populated before uploading essayReview to the database
       for (const res of result) {
+        console.log("STATUS: INSERTING ESSAY REVIEW")
+        console.log(JSON.stringify(res, null, 2));
         const { data: essayReviewData, error: essayReviewError } = await supabase
           .from('essay_review')
           .insert({

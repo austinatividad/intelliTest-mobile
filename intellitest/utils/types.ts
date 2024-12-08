@@ -1,3 +1,4 @@
+import { runOnJS } from 'react-native-reanimated';
 import { z } from 'zod';
 
 export enum fileTypes {
@@ -48,9 +49,15 @@ export const RubricSchema = z.object({
 });
 
 export const EssayReviewSchema = z.object({
+  rubric_id: z.string(),
+  criteria: z.string(),
   attained_score: z.number(),
   rubric_comment: z.string(),
 })
+
+export const EssayReviewSchemaList = z.object({
+  reviews: z.array(EssayReviewSchema),
+});
 
 export const QuestionSchema = z.object({
   question: z.string(),

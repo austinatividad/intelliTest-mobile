@@ -31,17 +31,16 @@ export default function Index() {
   }, [router]);
 
   return (
-    <View>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "flex-end",
+        alignItems: "center",
+      }}
+    >
 
     {sessionChecked && 
       <>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
-            alignItems: "center",
-          }}
-        >
           <View className="flex-col gap-48 pb-8 p-2">
             <View>
               <View className="flex flex-row justify-center">
@@ -61,7 +60,6 @@ export default function Index() {
               </Button>
             </View>
           </View>
-        </View>
       </>
     }
 

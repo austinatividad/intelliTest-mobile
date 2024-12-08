@@ -78,7 +78,7 @@ export default function RootLayout() {
       setSelectedValue(value);  // Update the selected value
       const path = pathMap[value];  // Get the path corresponding to the value
       if (ValidPaths.includes(path)) {
-        router.navigate({ pathname: path });  // Navigate to the path
+        router.push({ pathname: path });  // Navigate to the path
       }
     }
   };

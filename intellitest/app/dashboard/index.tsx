@@ -38,39 +38,6 @@ export default function Index() {
   const [suggestionContent, setSuggestionContent] = React.useState("");
   const [isCalled, setIsCalled] = React.useState(false);
 
-
-  //supabase query for getting latest exams
-  const getExams = async () => {
-    if (profile) {
-      const exams = await sq.getLatestExams(profile.id);
-      if (exams) {
-        setExams(exams);
-      }
-    }
-  }
-
-  //get the latest exams
-  useFocusEffect(
-    React.useCallback(() => {
-        setExams([]);
-        getExams();
-    }, [])
-  );
-
-  //get suggestion for new exam
-  React.useEffect(() => {
-    async function getSuggestion() {
-      if (!isCalled) {
-        setIsCalled(true);
-        const suggestion = await suggestNewExam(exams);
-        setSuggestionTitle(suggestion.suggestion_title);
-        setSuggestionContent(suggestion.suggestion_content);
-      }
-    }
-
-    getSuggestion();
-  }, [exams]);
-
   //get the current session, print details
   React.useEffect(() => {
     async function initialize() {
@@ -97,17 +64,24 @@ export default function Index() {
   }, [router]);
   
   React.useEffect(() => {
-    async function fetchExams() {
+    async function fetchAndSuggest() {
       if (profile) {
         setExams([]); // Clear exams before fetching new ones
         const exams = await sq.getLatestExams(profile.id);
         if (exams) {
           setExams(exams);
+          if (exams.length > 0 && !isCalled) {
+            console.log("Current Exams: ", exams);
+            setIsCalled(true);
+            const suggestion = await suggestNewExam(exams);
+            setSuggestionTitle(suggestion.suggestion_title);
+            setSuggestionContent(suggestion.suggestion_content);
+          }
         }
       }
     }
   
-    fetchExams();
+    fetchAndSuggest();
   }, [profile]); // Fetch exams only when `profile` is set
 
   React.useEffect(() => {

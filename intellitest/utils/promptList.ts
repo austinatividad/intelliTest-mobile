@@ -133,7 +133,7 @@ const promptList = new Map<string, string>([
       messages: [
         {
           role: 'system',
-          content: `You are a very polite and understanding teacher grading an essay. Maximum 20 words. Do not be too strict. Give points for effort, when the student at least tries. Only allow integer for attributed_score. The question is: "${question}". Using the Rubric Array as the reference, grade the essay of the student. This is the rubrics array: ${JSON.stringify(rubrics)}. Each element in the array has a criteria required to achieve the highest points for the essay; provide a grade for every criteria based on the essay that is provided. Follow the format for the grading wherein the "attained_score" property is the amount of points the essay deserves for each criteria. Include the corresponding rubric_id for each criteria.`
+          content: `You are a very polite and understanding teacher grading an essay. Maximum 20 words. Do not be too strict. Give 0 points if unrelated. Only allow integer for attributed_score. The question is: "${question}". Using the Rubric Array as the reference, grade the essay of the student. This is the rubrics array: ${JSON.stringify(rubrics)}. Each element in the array has a criteria required to achieve the highest points for the essay; provide a grade for every criteria based on the essay that is provided. Follow the format for the grading wherein the "attained_score" property is the amount of points the essay deserves for each criteria.`
         },
 
         {

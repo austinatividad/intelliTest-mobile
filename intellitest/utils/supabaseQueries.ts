@@ -412,6 +412,8 @@ const generateUUID = async (): Promise<string> => {
             console.log("EVALUATION RESULT: ");
             console.log(JSON.stringify(evaluation, null, 2));
             evaluation.reviews.forEach((review: any) => {
+              // append the rubric_id to the review
+              review.rubric_id = rubricsList.find((rubric) => rubric.criteria === review.criteria)?.id;
               result.push(review);
               // Add the attained score to the accumulated score
               accumulatedScore += review.attained_score;

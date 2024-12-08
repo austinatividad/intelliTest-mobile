@@ -49,7 +49,6 @@ export const RubricSchema = z.object({
 });
 
 export const EssayReviewSchema = z.object({
-  rubric_id: z.string(),
   criteria: z.string(),
   attained_score: z.number(),
   rubric_comment: z.string(),

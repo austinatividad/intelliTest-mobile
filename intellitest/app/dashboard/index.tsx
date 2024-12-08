@@ -33,31 +33,7 @@ type Profile = {
   email: string;
 }
 
-// Dummy user
-// const user: User = {
-//   firstName: "Josh",
-//   lastName: "Natividad",
-//   email: "josh@gmail.com",
-// };
 
-// Create dummy tests with unique ids
-const userTests: Test[] = [
-  { id: "1", testName: "Dummy Display for lists", userScore: -1, testScore: 100 },
-  { id: "2", testName: "To open an intelliTest", userScore: -1, testScore: 10 },
-  { id: "3", testName: "Go to My Exam and open", userScore: -1, testScore: 10 },
-  { id: "4", testName: "MOBDEVE - Recycler Views and Intents", userScore: -1, testScore: 30 },
-];
-
-const userScores: Test[] = [
-  { id: "5", testName: "STINTSY Backpropagation Exam", userScore: 30, testScore: 30 },
-  { id: "6", testName: "CSOPESY Exam", userScore: 30, testScore: 30 },
-  { id: "7", testName: "Top 10 Japanese Food", userScore: 80, testScore: 100 },
-];
-
-const userData: UserData = {
-  recentTests: userTests,
-  recentScores: userScores,
-};
 
 export default function Index() {
   const router = useRouter();
@@ -95,52 +71,11 @@ export default function Index() {
     }
 
   }, [profile])
-  // const [firstName, setFirstName] = React.useState("");
-
-  //debug - openaiClient and promptList
-  // TODO: Remove this code after testing.
-  // React.useEffect(() => {
-  //   console.log("is this working?")
-  //   async function testOpenaiClient() {
-  //     const response = await generateOutputWithReplacements("evaluateNotes", { notes:  pythonSyntaxExamples });
-  //     console.log(response);
-  //   }
-  //   testOpenaiClient();
-  // }, []);
-
-
-
 
   const handleExamPress = (id: string) => {
     console.log("Test pressed with id:", id);
     // Add logic to handle test press event
   };
-
-  //TODO: ADJUST SCORE AND TOTAL SCORE
-  const sections = [
-    {
-      title: "Latest Tests",
-      data: userData.recentTests,
-      renderItem: ({ item }: { item: Test }) => (
-        <ExamItem
-          examName={item.testName}
-          examStatus={item.userScore === -1 ? "NEW" : `${item.userScore}/${item.testScore}`}
-          id={item.id}
-          onPress={handleExamPress} score={0} totalScore={0}        />
-      ),
-    },
-    {
-      title: "Latest Scores",
-      data: userData.recentScores,
-      renderItem: ({ item }: { item: Test }) => (
-        <ExamItem
-          examName={item.testName}
-          examStatus={`${item.userScore}/${item.testScore}`}
-          id={item.id}
-          onPress={handleExamPress} score={0} totalScore={0}        />
-      ),
-    },
-  ];
 
   return (
     <View style={{ flex: 1 }}>
@@ -154,15 +89,7 @@ export default function Index() {
             </View>
           </View>
   
-          <SectionList
-            className="w-full p-4"
-            sections={sections}
-            keyExtractor={(item, index) => item.id + index}
-            renderSectionHeader={({ section }) => (
-              <Text className="pt-4 font-bold text-xl mb-4">{section.title}</Text>
-            )}
-            contentContainerStyle={{ paddingBottom: 56 }}
-          />
+
         </>
       )}
     </View>

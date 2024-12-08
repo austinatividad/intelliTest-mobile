@@ -107,6 +107,21 @@ const promptList = new Map<string, string>([
     });
 
     const exam = ExamSchema.parse(prompt.choices[0].message.parsed);
+
+    // Double check and validate total_score with the contents of the exam,
+    // as there are cases where it is innacurate
+    let totalScore = 0;
+    exam.part.forEach((p) => {
+      p.questions.forEach((question) => {
+        totalScore += question.points;
+      });
+    });
+
+    if (totalScore !== exam.total_score) {
+      console.warn(`Total score mismatch: ${totalScore} vs ${exam.total_score}`);
+      exam.total_score = totalScore;
+    }
+    
     return exam;
   }
   

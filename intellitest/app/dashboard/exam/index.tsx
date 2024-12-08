@@ -7,6 +7,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item";
 import React, { useEffect } from "react";
 import { InputWithIcon } from "@/components/ui/input-with-icon";
+import { BackHandler } from "react-native";
 
 import {Search} from "lucide-react-native";
 
@@ -50,11 +51,28 @@ export default function Index() {
     })
   }
 
+
+  useEffect(() => {
+    const backAction = () => {
+        router.replace({
+            pathname: `/dashboard/exams`,
+        });
+        return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+    );
+
+    return () => backHandler.remove();
+}, []);
+
   const handleAttemptView = async () => {
     console.log("Pressed")
 
     const attemptID = await sq.getLatestAttemptID(examId)
-    
+
     router.navigate({
       pathname: "/dashboard/exam/" + examId + "/results",
       params: {attemptID: attemptID.id}

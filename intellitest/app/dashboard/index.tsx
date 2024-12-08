@@ -8,23 +8,16 @@ import { NotebookText } from "lucide-react-native";
 import { ExamItem } from "@/components/IntelliTest/Dashboard/exam-item"; // Import ExamItem component
 import { GenerateButton } from "@/components/IntelliTest/Buttons/generateButton"; // Import generateButton component
 import { getSession, getProfile } from "@/utils/auth";
-
-//openaiClient and promptList debug
-// TODO: Remove this code after testing.
-// import { promptList } from "@/utils/promptList";
-// import { generateOutput, testPromptWithReplacements, imageTestPrompt, generateOutputWithReplacements } from "@/utils/openaiClient";
-
-
-interface Test {
+import { ScrollView } from "react-native-reanimated/lib/typescript/Animated";
+import { Item } from "@rn-primitives/toggle-group";
+import * as sq from "@/utils/supabaseQueries";
+import { suggestNewExam } from "@/utils/promptList";
+interface Exam {
   id: string;
-  testName: string;
-  userScore: number;
-  testScore: number;
-}
-
-interface UserData {
-  recentTests: Test[];
-  recentScores: Test[];
+  exam_name: string;
+  status: string;
+  score: number;
+  total_score: number;
 }
 
 type Profile = {
@@ -39,6 +32,40 @@ export default function Index() {
   const router = useRouter();
   const { setLoading, setText } = useLoadingContext();
   const [profile, setProfile] = React.useState<Profile | null>(null);
+  const [exams, setExams] = React.useState<Exam[]>([]);
+  const [suggestionTitle, setSuggestionTitle] = React.useState("Thinking...");
+  const [suggestionContent, setSuggestionContent] = React.useState("");
+  const [isCalled, setIsCalled] = React.useState(false);
+
+
+  //supabase query for getting latest exams
+  const getExams = async () => {
+    const exams = await sq.getLatestExams();
+    console.log(JSON.stringify(exams, null ,2));
+    if (exams) {
+      setExams(exams);
+    }
+  }
+
+  //get the latest exams
+  React.useEffect(() => {
+    getExams();
+  }, []);
+
+  //get suggestion for new exam
+  React.useEffect(() => {
+    async function getSuggestion() {
+      if (!isCalled) {
+        setIsCalled(true);
+        const suggestion = await suggestNewExam(exams);
+        console.log(suggestion);
+        setSuggestionTitle(suggestion.suggestion_title);
+        setSuggestionContent(suggestion.suggestion_content);
+      }
+    }
+
+    getSuggestion();
+  }, [exams]);
 
   //get the current session, print details
   React.useEffect(() => {
@@ -72,10 +99,19 @@ export default function Index() {
 
   }, [profile])
 
-  const handleExamPress = (id: string) => {
-    console.log("Test pressed with id:", id);
-    // Add logic to handle test press event
-  };
+  function handleExamPress(id: string) {
+    router.push({
+      pathname: "/dashboard/exam",
+      params: { examId: id },
+    });
+  }
+
+  function handleSuggestionPress() {
+    router.push({
+      pathname: "/dashboard/new",
+      params: { title: suggestionTitle, content: suggestionContent },
+    });
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -88,7 +124,38 @@ export default function Index() {
               <GenerateButton />
             </View>
           </View>
-  
+
+          <View className="px-10 w-full">
+            {exams.length > 0 && (
+              <>
+              <Text className="text-2xl font-bold text-black pb-4">My Latest Exams</Text>
+              {exams.map((exam) => (
+                <ExamItem
+                key={exam.id}
+                id={exam.id}
+                examName={exam.exam_name} // Map `exam_name` to `examName`
+                examStatus={exam.status} // Map `exam_status` to `examStatus`
+                score={exam.score} // Direct mapping
+                totalScore={exam.total_score} // Map `total_score` to `totalScore`
+                onPress={handleExamPress} // Pass the handler directly
+                />
+              ))}
+                <Text className="text-xl font-bold text-black pb-2">
+                {exams.length > 0 ? "You might like:" : "Hello, new intelliTester! Here's a cool suggestion to get you started :)"}
+                </Text>
+              </>
+            )}
+            <ExamItem
+              id="1"
+              examName={suggestionTitle}
+              examStatus="AI Suggestion!"
+              score={10}
+              totalScore={10}
+              onPress={handleSuggestionPress}
+            />
+          </View>
+
+
 
         </>
       )}

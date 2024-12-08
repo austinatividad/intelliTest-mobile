@@ -1,7 +1,7 @@
 import { ScrollView, View, Text, FlatList } from "react-native";
 import { useLoadingContext } from "@/components/Providers/LoaderSpinnerContext";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from "react";
@@ -18,6 +18,17 @@ export default function Index() {
   const [documents, setDocuments] = useState<Document[]>([]); // State to store uploaded documents
   const [showDocuments, setShowDocuments] = useState(false); // State to toggle document visibility
   const [inputText, setInputText] = useState(""); // State to track textarea content
+
+  // local params: title, content (from suggestion)
+  const { title, content } = useLocalSearchParams();
+  console.log(title, content);
+
+  // Function to handle placing title and content if these parameters are not empty
+  React.useEffect(() => {
+    if (title && content) {
+      setInputText(Array.isArray(content) ? content.join(' ') : content); // Set the content to the input text
+    }
+  }, [title, content]);
 
   // Function to handle uploading documents (toggle visibility)
   const handleUploadClick = () => {
@@ -40,7 +51,10 @@ export default function Index() {
     console.log(examInputContent);
     router.push({
       pathname: "/dashboard/new/options",
-      params: { examInputContent: JSON.stringify(examInputContent) },
+      params: { 
+        examInputContent: JSON.stringify(examInputContent),
+        title: title || "", // Add the exam title if it exists
+      },
     });
   };
 

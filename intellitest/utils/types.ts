@@ -85,3 +85,8 @@ export const ExamSchema = z.object({
   total_score: z.number(),
   part: z.array(PartSchema),
 });
+
+export const SuggestionSchema = z.object({
+  suggestion_title: z.string(),
+  suggestion_content: z.string(),
+})

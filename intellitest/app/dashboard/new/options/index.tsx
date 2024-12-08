@@ -33,7 +33,15 @@ export default function Index() {
   const [examId, setExamId] = useState("");
 
   const examInputContent : ExamInputContent = JSON.parse(useLocalSearchParams<{ examInputContent: string }>().examInputContent); // Get the exam input content from the URL
+  const suggestionTitle = useLocalSearchParams<{ title: string }>().title; // Get the suggestion title from the URL
 
+  // if suggestionTitle exists, set the exam name to the suggestion title
+  useEffect(() => {
+    if (suggestionTitle) {
+      setExamName(suggestionTitle);
+    }
+  }, [suggestionTitle]);
+  
   // Check if the Continue button should be visible
   const isButtonVisible = examName.trim().length > 0;
 

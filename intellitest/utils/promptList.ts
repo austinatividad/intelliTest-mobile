@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-import { AdditionalExamPromptOptions, EssayReviewSchema, ExamSchema, RubricSchema, EssayReviewSchemaList } from "./types";
+import { AdditionalExamPromptOptions, EssayReviewSchema, ExamSchema, RubricSchema, EssayReviewSchemaList, SuggestionSchema } from "./types";
 import { z } from "zod";
 import { ChatCompletionContentPartImage, ChatCompletionContentPartText } from "openai/resources";
 import { ImageURL } from "openai/resources/beta/threads/messages";
@@ -118,7 +118,8 @@ const promptList = new Map<string, string>([
     });
 
     if (totalScore !== exam.total_score) {
-      console.warn(`Total score mismatch: ${totalScore} (calculated) vs ${exam.total_score} (prompt)`);
+      //changed to log because warn shows in the device
+      console.log(`Total score mismatch: ${totalScore} (calculated) vs ${exam.total_score} (prompt)`);
       exam.total_score = totalScore;
     }
 
@@ -147,3 +148,22 @@ const promptList = new Map<string, string>([
   }
   export { promptList, getPrompt, generateExam, evaluateEssay };
   
+  export async function suggestNewExam(latestExams: any[]) {
+    const prompt = await openai.beta.chat.completions.parse({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `Recommend a new exam for them to generate based on the 3 latest exams they made. suggestionContent is the prompt / context of the exam that would act as notes for generating the suggested exams. suggestionTitle should be the identifying name of an exam, not a prompt or action. If there were no exams made, provide a random suggestion.`
+        },
+          
+          {
+            role: 'user',
+            content: JSON.stringify(latestExams)
+          }
+      ],
+      response_format: zodResponseFormat(SuggestionSchema, 'SuggestionSchemaFormat')
+    });
+    const suggestion = SuggestionSchema.parse(prompt.choices[0].message.parsed);
+    return suggestion;
+  }

@@ -17,14 +17,16 @@ export default function Index() {
     // setLoading(true);
     // setText(`Welcome! Please be patient while we prepare things for you! 😊`);
     async function checkSession() {
+      console.log("Checking session");
       setLoading(true);
       setText(``);
       const session = await getSession();
       if (session.data.session != null) {
         router.replace("/dashboard");
       }
-
+      console.log("Session checked");
       setSessionChecked(true);
+      setLoading(false);
     }
     checkSession();
     

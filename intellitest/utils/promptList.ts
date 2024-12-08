@@ -118,10 +118,10 @@ const promptList = new Map<string, string>([
     });
 
     if (totalScore !== exam.total_score) {
-      console.warn(`Total score mismatch: ${totalScore} vs ${exam.total_score}`);
+      console.warn(`Total score mismatch: ${totalScore} (calculated) vs ${exam.total_score} (prompt)`);
       exam.total_score = totalScore;
     }
-    
+
     return exam;
   }
   

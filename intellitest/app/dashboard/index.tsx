@@ -70,7 +70,7 @@ export default function Index() {
         const exams = await sq.getLatestExams(profile.id);
         if (exams) {
           setExams(exams);
-          if (exams.length > 0 && !isCalled) {
+          if (!isCalled) {
             console.log("Current Exams: ", exams);
             setIsCalled(true);
             const suggestion = await suggestNewExam(exams);

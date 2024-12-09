@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DocumentItem } from "@/components/IntelliTest/Dashboard/document-item"; // Import ExamItem
 import { X } from "lucide-react-native";
 import { Document, ExamInputContent, fileTypes } from "@/utils/types";
-import { convertImageToBase64, convertImageToBase64WithPrefix } from "@/utils/imageUtil";
+import { appendPrefixToBase64, convertImageToBase64, convertImageToBase64WithPrefix } from "@/utils/imageUtil";
 import * as Clipboard from 'expo-clipboard';
 
 export default function Index() {
@@ -74,7 +74,7 @@ export default function Index() {
         // Use type assertion to check for a custom base64 property
         const imageAsset = asset as ImagePicker.ImagePickerAsset & { base64?: string };
         if (imageAsset.base64 && imageAsset.base64.trim() !== "") {
-          base64Value = imageAsset.base64; // Use existing base64 if available
+          base64Value = await appendPrefixToBase64(imageAsset.base64, asset.mimeType);
         } else {
           // Call your function to convert the image to base64
           base64Value = await convertImageToBase64WithPrefix(asset.uri, asset.mimeType); // Ensure this function is implemented correctly

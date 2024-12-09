@@ -46,3 +46,7 @@ export async function convertImageToBase64(imageUri: string) {
   export const extractURIs = (assets: Document[]) : string[] => {
     return assets.map((asset) => asset.uri);
   }
+
+  export async function appendPrefixToBase64(base64: string, mimeType: string = 'image/png') {
+    return `data:${mimeType};base64,${base64}`;
+  }

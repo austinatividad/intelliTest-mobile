@@ -74,7 +74,7 @@ export default function summaryPage() {
 
     // Function to go back to the "My Exams" dashboard
     const handleDashboardButton = () => {
-        router.navigate({
+        router.push({
             pathname: `/dashboard/exams`, // Navigate back to "My Exams" page
         });
     };

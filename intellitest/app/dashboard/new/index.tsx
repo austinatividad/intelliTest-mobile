@@ -128,6 +128,10 @@ export default function Index() {
 
       const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
       const mediaLibraryPermission = await ImagePicker.getMediaLibraryPermissionsAsync();
+
+      console.log("Checking Perms")
+      console.log(cameraPermission);
+      console.log(mediaLibraryPermission)
     
       if (!cameraPermission.granted || !mediaLibraryPermission.granted) {
         alert('Camera and Media Library permissions are required.');
@@ -136,7 +140,7 @@ export default function Index() {
       let result = await ImagePicker.launchCameraAsync({
         cameraType: ImagePicker.CameraType.back,
         allowsEditing: true,
-        quality: 1,
+        quality: 0.2,
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         base64: true
       });
